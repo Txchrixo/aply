@@ -256,7 +256,7 @@ export function MonitoringSection({
           <Button
             onClick={handleScanNow}
             disabled={scanning}
-            className="h-10 shrink-0 gap-2 rounded-lg bg-[#C65D00] px-4 text-sm font-medium text-[#FFE4B5] shadow-sm transition-all hover:bg-[#FF9F1C] hover:text-[#4A2F1A] hover:shadow-md disabled:opacity-60"
+            className="h-10 shrink-0 gap-2 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-accent hover:text-foreground hover:shadow-md disabled:opacity-60"
           >
             <Icon
               name="sync"
@@ -269,20 +269,20 @@ export function MonitoringSection({
 
         <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
           {/* Recently detected list */}
-          <Card className={`lg:col-span-2 gap-0 rounded-xl border-[#CFC5BE] bg-[#FFF4DC] p-0 ${scanning ? "aply-radar border-[#C65D00]/40" : ""}`}>
-            <div className="flex items-center justify-between border-b border-[#CFC5BE] px-5 py-4">
+          <Card className={`lg:col-span-2 gap-0 rounded-xl border-border bg-card p-0 ${scanning ? "aply-radar border-[#C65D00]/40" : ""}`}>
+            <div className="flex items-center justify-between border-b border-border px-5 py-4">
               <div className="flex items-center gap-2">
-                <Icon name="pulse" size={16} className="text-[#C65D00]" />
-                <h3 className="font-heading text-lg font-semibold text-[#4A2F1A]">
+                <Icon name="pulse" size={16} className="text-primary" />
+                <h3 className="font-heading text-lg font-semibold text-foreground">
                   {t("monitoring.recent")}
                 </h3>
               </div>
-              <span className="text-xs text-[#79695E]">
+              <span className="text-xs text-muted-foreground">
                 {rows.length} {t("monitoring.shown")}
               </span>
             </div>
             <ScrollArea className="h-[28rem]">
-              <ul className="divide-y divide-[#CFC5BE]">
+              <ul className="divide-y divide-border">
                 {loading
                   ? Array.from({ length: 6 }).map((_, i) => (
                       <li key={i} className="flex items-center gap-3 px-5 py-4">
@@ -296,10 +296,10 @@ export function MonitoringSection({
                     ))
                   : rows.length === 0 ? (
                       <li className="flex flex-col items-center gap-3 px-5 py-16 text-center">
-                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FFE4B5] text-[#C65D00]">
+                        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-background text-primary">
                           <Icon name="search" size={20} />
                         </span>
-                        <p className="text-sm text-[#79695E]">
+                        <p className="text-sm text-muted-foreground">
                           {t("monitoring.empty")}
                         </p>
                       </li>
@@ -315,10 +315,10 @@ export function MonitoringSection({
                             initial={isNew ? { opacity: 0, backgroundColor: "rgba(255,159,28,0.25)" } : false}
                             animate={{ opacity: 1, backgroundColor: "rgba(255,159,28,0)" }}
                             transition={{ duration: 1.2 }}
-                            className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-[#FFE4B5]/60 sm:flex-row sm:items-center dark:hover:bg-[#4A2F1A]/60"
+                            className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-background/60 sm:flex-row sm:items-center dark:hover:bg-secondary/60"
                           >
                             <span
-                              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-semibold text-[#FFE4B5]"
+                              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-semibold text-primary-foreground"
                               style={{
                                 backgroundColor: logoColor(row.company ?? row.title),
                               }}
@@ -328,12 +328,12 @@ export function MonitoringSection({
                             </span>
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center gap-2">
-                                <p className="truncate font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+                                <p className="truncate font-medium text-foreground dark:text-primary-foreground">
                                   {row.title}
                                 </p>
                                 <CategoryBadge category={row.category} />
                                 {isNew && (
-                                  <span className="inline-flex items-center gap-0.5 rounded bg-[#FF9F1C] px-1.5 py-0.5 text-[9px] font-bold uppercase text-[#4A2F1A]">
+                                  <span className="inline-flex items-center gap-0.5 rounded bg-accent px-1.5 py-0.5 text-[9px] font-bold uppercase text-foreground">
                                     <Icon name="zap" size={9} />
                                     New
                                   </span>
@@ -344,23 +344,23 @@ export function MonitoringSection({
                                   <Icon
                                     name="sync"
                                     size={11}
-                                    className="animate-spin text-[#C65D00] dark:text-[#FF9F1C]"
+                                    className="animate-spin text-primary dark:text-[#FF9F1C]"
                                   />
-                                  <span className="text-[11px] text-[#79695E] dark:text-[#C9B89F]">
+                                  <span className="text-[11px] text-muted-foreground dark:text-[#C9B89F]">
                                     Importing · {importStepLabel(row.importStep)}
                                   </span>
                                   <div className="ml-1 h-1 w-20 overflow-hidden rounded-full bg-[#CFC5BE] dark:bg-[#5A3D26]">
                                     <div
-                                      className="h-full rounded-full bg-[#C65D00] transition-all dark:bg-[#FF9F1C]"
+                                      className="h-full rounded-full bg-primary transition-all dark:bg-accent"
                                       style={{ width: `${importPct}%` }}
                                     />
                                   </div>
-                                  <span className="text-[10px] font-medium text-[#79695E] dark:text-[#C9B89F]">
+                                  <span className="text-[10px] font-medium text-muted-foreground dark:text-[#C9B89F]">
                                     {importPct}%
                                   </span>
                                 </div>
                               ) : (
-                                <p className="mt-0.5 truncate text-xs text-[#79695E] dark:text-[#C9B89F]">
+                                <p className="mt-0.5 truncate text-xs text-muted-foreground dark:text-[#C9B89F]">
                                   {row.company ?? "-"}
                                   {row.location ? ` · ${row.location}` : ""}
                                   {row.salary ? ` · ${row.salary}` : ""}
@@ -375,7 +375,7 @@ export function MonitoringSection({
                                 <ContractBadge type={row.contractType} />
                               )}
                               {importing ? (
-                                <span className="inline-flex items-center gap-1 rounded-md border border-[#C65D00]/30 bg-[#C65D00]/10 px-2 py-0.5 text-[11px] font-medium leading-none text-[#C65D00] dark:border-[#FF9F1C]/40 dark:bg-[#FF9F1C]/15 dark:text-[#FF9F1C]">
+                                <span className="inline-flex items-center gap-1 rounded-md border border-[#C65D00]/30 bg-primary/10 px-2 py-0.5 text-[11px] font-medium leading-none text-primary dark:border-[#FF9F1C]/40 dark:bg-accent/15 dark:text-[#FF9F1C]">
                                   <Icon name="sync" size={10} className="animate-spin" />
                                   Importing
                                 </span>
@@ -386,7 +386,7 @@ export function MonitoringSection({
                                 <Button
                                   size="sm"
                                   disabled
-                                  className="h-7 gap-1 bg-[#C65D00] px-2.5 text-xs text-[#FFE4B5] opacity-60"
+                                  className="h-7 gap-1 bg-primary px-2.5 text-xs text-primary-foreground opacity-60"
                                 >
                                   <Icon name="sync" size={12} className="animate-spin" />
                                   {t("monitoring.prepare")}
@@ -395,7 +395,7 @@ export function MonitoringSection({
                                 <Button
                                   size="sm"
                                   onClick={() => handlePrepare(row.jobOfferId!)}
-                                  className="h-7 gap-1 bg-[#C65D00] px-2.5 text-xs text-[#FFE4B5] hover:bg-[#FF9F1C]"
+                                  className="h-7 gap-1 bg-primary px-2.5 text-xs text-primary-foreground hover:bg-accent"
                                 >
                                   <Icon name="pencil" size={12} />
                                   {t("monitoring.prepare")}
@@ -405,7 +405,7 @@ export function MonitoringSection({
                                   size="sm"
                                   variant="outline"
                                   asChild
-                                  className="h-7 gap-1 border-[#CFC5BE] px-2.5 text-xs text-[#C65D00] hover:bg-[#FFE4B5] dark:border-[#5A3D26] dark:text-[#FF9F1C] dark:hover:bg-[#4A2F1A]"
+                                  className="h-7 gap-1 border-border px-2.5 text-xs text-primary hover:bg-background dark:border-[#5A3D26] dark:text-[#FF9F1C] dark:hover:bg-[#4A2F1A]"
                                 >
                                   <a href="#approvals">
                                     <Icon name="eye" size={12} />
@@ -424,7 +424,7 @@ export function MonitoringSection({
 
           {/* Right column · status + strict mode */}
           <div className="flex flex-col gap-4">
-            <Card className="gap-4 rounded-xl border-[#CFC5BE] bg-[#FFF4DC] p-5">
+            <Card className="gap-4 rounded-xl border-border bg-card p-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="relative flex h-2.5 w-2.5">
@@ -441,7 +441,7 @@ export function MonitoringSection({
                       }`}
                     />
                   </span>
-                  <h3 className="font-heading text-base font-semibold text-[#4A2F1A]">
+                  <h3 className="font-heading text-base font-semibold text-foreground">
                     {t("monitoring.status")}
                   </h3>
                 </div>
@@ -455,23 +455,23 @@ export function MonitoringSection({
 
               <dl className="grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <dt className="text-xs text-[#79695E]">
+                  <dt className="text-xs text-muted-foreground">
                     {t("monitoring.scanInterval")}
                   </dt>
-                  <dd className="font-medium text-[#4A2F1A]">
+                  <dd className="font-medium text-foreground">
                     {settings?.scanIntervalMinutes ?? stats?.scanIntervalMinutes ?? "-"} {t("monitoring.min")}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-xs text-[#79695E]">
+                  <dt className="text-xs text-muted-foreground">
                     {t("monitoring.lastScan")}
                   </dt>
-                  <dd className="font-medium text-[#4A2F1A]">
+                  <dd className="font-medium text-foreground">
                     {relativeTime(stats?.lastScan)}
                   </dd>
                 </div>
                 <div className="col-span-2">
-                  <dt className="text-xs text-[#79695E]">
+                  <dt className="text-xs text-muted-foreground">
                     {t("monitoring.activeLanguages")}
                   </dt>
                   <dd className="mt-1 flex flex-wrap gap-1.5">
@@ -483,18 +483,18 @@ export function MonitoringSection({
               </dl>
             </Card>
 
-            <Card className="gap-3 rounded-xl border-[#CFC5BE] bg-[#FFF4DC] p-5">
+            <Card className="gap-3 rounded-xl border-border bg-card p-5">
               <div className="flex items-center gap-2">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#B23A1E]/10 text-[#B23A1E]">
                   <Icon name="shield-lock" size={14} />
                 </span>
-                <h3 className="font-heading text-base font-semibold text-[#4A2F1A]">
+                <h3 className="font-heading text-base font-semibold text-foreground">
                   {t("monitoring.antiAi.title")}
                 </h3>
               </div>
-              <p className="text-sm text-[#79695E]">
+              <p className="text-sm text-muted-foreground">
                 {t("monitoring.antiAi.desc")}{" "}
-                <span className="font-medium text-[#4A2F1A]">
+                <span className="font-medium text-foreground">
                   {Math.round((settings?.autoApproveThreshold ?? 0) * 100)}%
                 </span>{" "}
                 {t("monitoring.antiAi.never")}
@@ -508,10 +508,10 @@ export function MonitoringSection({
                 ].map((stage) => (
                   <div
                     key={stage.label}
-                    className="flex flex-col items-center gap-1 rounded-md border border-[#CFC5BE] bg-[#FFE4B5] py-2 text-center"
+                    className="flex flex-col items-center gap-1 rounded-md border border-border bg-background py-2 text-center"
                   >
-                    <Icon name={stage.icon} size={14} className="text-[#C65D00]" />
-                    <span className="text-[10px] font-medium text-[#79695E]">
+                    <Icon name={stage.icon} size={14} className="text-primary" />
+                    <span className="text-[10px] font-medium text-muted-foreground">
                       {stage.label}
                     </span>
                   </div>

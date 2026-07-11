@@ -96,18 +96,18 @@ function AccountEmailsInput({
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-1.5 rounded-md border border-[#CFC5BE] bg-[#FFF4DC] p-2 focus-within:border-[#C65D00] dark:border-[#5A3D26] dark:bg-[#3A2417] dark:focus-within:border-[#FF9F1C]">
+      <div className="flex flex-wrap items-center gap-1.5 rounded-md border border-border bg-card p-2 focus-within:border-[#C65D00] dark:border-[#5A3D26] dark:bg-[#3A2417] dark:focus-within:border-[#FF9F1C]">
         {emails.map((e) => (
           <span
             key={e}
-            className="inline-flex items-center gap-1 rounded border border-[#C65D00]/30 bg-[#C65D00]/10 px-1.5 py-0.5 text-[11px] font-medium text-[#C65D00] dark:border-[#FF9F1C]/40 dark:bg-[#FF9F1C]/15 dark:text-[#FF9F1C]"
+            className="inline-flex items-center gap-1 rounded border border-[#C65D00]/30 bg-primary/10 px-1.5 py-0.5 text-[11px] font-medium text-primary dark:border-[#FF9F1C]/40 dark:bg-accent/15 dark:text-[#FF9F1C]"
           >
             <Icon name="mail" size={10} />
             {e}
             <button
               type="button"
               onClick={() => removeEmail(e)}
-              className="ml-0.5 text-[#79695E] hover:text-[#B23A1E] dark:text-[#C9B89F] dark:hover:text-[#FF9F1C]"
+              className="ml-0.5 text-muted-foreground hover:text-[#B23A1E] dark:text-[#C9B89F] dark:hover:text-[#FF9F1C]"
               aria-label={`Remove ${e}`}
             >
               <Icon name="x" size={10} />
@@ -126,14 +126,14 @@ function AccountEmailsInput({
             if (input.trim()) addMany(input);
           }}
           placeholder={emails.length === 0 ? placeholder : ""}
-          className="min-w-[10rem] flex-1 bg-transparent text-sm text-[#4A2F1A] outline-none placeholder:text-[#79695E] dark:text-[#FFE4B5] dark:placeholder:text-[#C9B89F]"
+          className="min-w-[10rem] flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground dark:text-primary-foreground dark:placeholder:text-[#C9B89F]"
         />
       </div>
       {error && (
         <p className="mt-1 text-xs text-[#B23A1E] dark:text-[#FF6B4A]">{error}</p>
       )}
       {emails.length > 0 && (
-        <p className="mt-1 text-[10px] text-[#79695E] dark:text-[#C9B89F]">
+        <p className="mt-1 text-[10px] text-muted-foreground dark:text-[#C9B89F]">
           {emails.length} email{emails.length > 1 ? "s" : ""} · press Enter or comma to add
         </p>
       )}
@@ -265,7 +265,7 @@ export function SettingsSection({
           subtitle={t("settings.subtitle")}
         />
 
-        <Card className="mt-8 gap-6 rounded-xl border-[#CFC5BE] bg-[#FFF4DC] p-6">
+        <Card className="mt-8 gap-6 rounded-xl border-border bg-card p-6">
           {loading || !settings ? (
             <div className="grid gap-4">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -275,12 +275,12 @@ export function SettingsSection({
           ) : (
             <div className="grid gap-6 md:grid-cols-2">
               {/* Monitoring enabled */}
-              <div className="flex items-start justify-between gap-3 rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-4">
+              <div className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4">
                 <div className="flex-1">
-                  <Label htmlFor="set-mon" className="font-medium text-[#4A2F1A]">
+                  <Label htmlFor="set-mon" className="font-medium text-foreground">
                     {t("settings.monitoring")}
                   </Label>
-                  <p className="mt-1 text-xs text-[#79695E]">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {t("settings.monitoring.desc")}
                   </p>
                 </div>
@@ -292,11 +292,11 @@ export function SettingsSection({
               </div>
 
               {/* Scan interval */}
-              <div className="rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-4">
-                <Label className="font-medium text-[#4A2F1A]">
+              <div className="rounded-lg border border-border bg-background p-4">
+                <Label className="font-medium text-foreground">
                   {t("settings.interval")}
                 </Label>
-                <p className="mb-3 mt-1 text-xs text-[#79695E]">
+                <p className="mb-3 mt-1 text-xs text-muted-foreground">
                   {t("settings.interval.desc")}
                 </p>
                 <Select
@@ -305,7 +305,7 @@ export function SettingsSection({
                     update("scanIntervalMinutes", Number(v))
                   }
                 >
-                  <SelectTrigger className="w-full bg-[#FFF4DC]">
+                  <SelectTrigger className="w-full bg-card">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -319,15 +319,15 @@ export function SettingsSection({
               </div>
 
               {/* Anti-AI strict mode */}
-              <div className="flex items-start justify-between gap-3 rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-4">
+              <div className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4">
                 <div className="flex-1">
                   <Label
                     htmlFor="set-strict"
-                    className="font-medium text-[#4A2F1A]"
+                    className="font-medium text-foreground"
                   >
                     {t("settings.strict")}
                   </Label>
-                  <p className="mt-1 text-xs text-[#79695E]">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {t("settings.strict.desc")}
                   </p>
                 </div>
@@ -339,16 +339,16 @@ export function SettingsSection({
               </div>
 
               {/* Auto-approve threshold */}
-              <div className="rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-4">
+              <div className="rounded-lg border border-border bg-background p-4">
                 <div className="flex items-center justify-between">
-                  <Label className="font-medium text-[#4A2F1A]">
+                  <Label className="font-medium text-foreground">
                     {t("settings.threshold")}
                   </Label>
-                  <span className="font-heading text-lg font-semibold text-[#C65D00]">
+                  <span className="font-heading text-lg font-semibold text-primary">
                     {Math.round((form.autoApproveThreshold ?? 0) * 100)}%
                   </span>
                 </div>
-                <p className="mb-3 mt-1 text-xs text-[#79695E]">
+                <p className="mb-3 mt-1 text-xs text-muted-foreground">
                   {t("settings.threshold.desc")}
                 </p>
                 <Slider
@@ -365,9 +365,9 @@ export function SettingsSection({
               </div>
 
               {/* Languages */}
-              <div className="rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-4">
-                <Label className="font-medium text-[#4A2F1A]">{t("settings.languages")}</Label>
-                <p className="mb-3 mt-1 text-xs text-[#79695E]">
+              <div className="rounded-lg border border-border bg-background p-4">
+                <Label className="font-medium text-foreground">{t("settings.languages")}</Label>
+                <p className="mb-3 mt-1 text-xs text-muted-foreground">
                   {t("settings.languages.desc")}
                 </p>
                 <div className="flex flex-wrap gap-4">
@@ -390,18 +390,18 @@ export function SettingsSection({
               </div>
 
               {/* Notification channel */}
-              <div className="rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-4">
-                <Label className="font-medium text-[#4A2F1A]">
+              <div className="rounded-lg border border-border bg-background p-4">
+                <Label className="font-medium text-foreground">
                   {t("settings.channel")}
                 </Label>
-                <p className="mb-3 mt-1 text-xs text-[#79695E]">
+                <p className="mb-3 mt-1 text-xs text-muted-foreground">
                   {t("settings.channel.desc")}
                 </p>
                 <Select
                   value={form.notifyChannel ?? "dashboard"}
                   onValueChange={(v) => update("notifyChannel", v)}
                 >
-                  <SelectTrigger className="w-full bg-[#FFF4DC]">
+                  <SelectTrigger className="w-full bg-card">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -416,7 +416,7 @@ export function SettingsSection({
 
               {/* Notify email */}
               <div className="grid gap-1.5">
-                <Label htmlFor="set-email" className="font-medium text-[#4A2F1A]">
+                <Label htmlFor="set-email" className="font-medium text-foreground">
                   {t("settings.email")}
                 </Label>
                 <Input
@@ -425,13 +425,13 @@ export function SettingsSection({
                   value={form.notifyEmail ?? ""}
                   onChange={(e) => update("notifyEmail", e.target.value)}
                   placeholder={t("settings.placeholder.email")}
-                  className="bg-[#FFE4B5]"
+                  className="bg-background"
                 />
               </div>
 
               {/* Notify WhatsApp */}
               <div className="grid gap-1.5">
-                <Label htmlFor="set-wa" className="font-medium text-[#4A2F1A]">
+                <Label htmlFor="set-wa" className="font-medium text-foreground">
                   {t("settings.whatsapp")}
                 </Label>
                 <Input
@@ -440,7 +440,7 @@ export function SettingsSection({
                   value={form.notifyWhatsapp ?? ""}
                   onChange={(e) => update("notifyWhatsapp", e.target.value)}
                   placeholder={t("settings.placeholder.whatsapp")}
-                  className="bg-[#FFE4B5]"
+                  className="bg-background"
                 />
               </div>
 
@@ -450,7 +450,7 @@ export function SettingsSection({
                   variant="outline"
                   onClick={handleTestNotification}
                   disabled={testingNotif}
-                  className="border-[#C65D00] text-[#C65D00] hover:bg-[#FFE4B5]"
+                  className="border-[#C65D00] text-primary hover:bg-background"
                 >
                   {testingNotif ? (
                     <Icon name="sync" size={14} className="animate-spin" />
@@ -460,22 +460,22 @@ export function SettingsSection({
                   {t("settings.testNotification")}
                 </Button>
                 {testPreview && (
-                  <div className="mt-3 rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-4 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
+                  <div className="mt-3 rounded-lg border border-border bg-background p-4 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
                     <div className="mb-2 flex items-center gap-2">
-                      <span className="flex h-6 w-6 items-center justify-center rounded bg-[#C65D00] text-[#FFE4B5]">
+                      <span className="flex h-6 w-6 items-center justify-center rounded bg-primary text-primary-foreground">
                         <Icon name={testPreview.channel === "email" ? "mail" : "comment-discussion"} size={12} />
                       </span>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-[#C65D00]">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-primary">
                         {testPreview.channel === "email" ? "Email preview" : "WhatsApp preview"}
                       </span>
-                      <span className="ml-auto text-xs text-[#79695E]">
+                      <span className="ml-auto text-xs text-muted-foreground">
                         To: {testPreview.to}
                       </span>
                     </div>
-                    <p className="text-sm font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+                    <p className="text-sm font-medium text-foreground dark:text-primary-foreground">
                       {testPreview.subject}
                     </p>
-                    <pre className="mt-2 whitespace-pre-wrap text-xs leading-relaxed text-[#79695E] dark:text-[#C9B89F]">
+                    <pre className="mt-2 whitespace-pre-wrap text-xs leading-relaxed text-muted-foreground dark:text-[#C9B89F]">
                       {testPreview.body}
                     </pre>
                   </div>
@@ -488,7 +488,7 @@ export function SettingsSection({
                   variant="outline"
                   onClick={handleLoadDigest}
                   disabled={loadingDigest}
-                  className="border-[#8B4513] text-[#8B4513] hover:bg-[#FFE4B5] dark:border-[#D2691E] dark:text-[#D2691E]"
+                  className="border-[#8B4513] text-[#8B4513] hover:bg-background dark:border-[#D2691E] dark:text-[#D2691E]"
                 >
                   {loadingDigest ? (
                     <Icon name="sync" size={14} className="animate-spin" />
@@ -498,22 +498,22 @@ export function SettingsSection({
                   {t("settings.weeklyDigest")}
                 </Button>
                 {digest && (
-                  <div className="mt-3 rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-4 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
+                  <div className="mt-3 rounded-lg border border-border bg-background p-4 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
                     <div className="mb-2 flex items-center gap-2">
-                      <span className="flex h-6 w-6 items-center justify-center rounded bg-[#8B4513] text-[#FFE4B5]">
+                      <span className="flex h-6 w-6 items-center justify-center rounded bg-[#8B4513] text-primary-foreground">
                         <Icon name="mail" size={12} />
                       </span>
                       <span className="text-xs font-semibold uppercase tracking-wider text-[#8B4513] dark:text-[#D2691E]">
                         {t("settings.digestPreview")}
                       </span>
-                      <span className="ml-auto text-xs text-[#79695E] dark:text-[#C9B89F]">
+                      <span className="ml-auto text-xs text-muted-foreground dark:text-[#C9B89F]">
                         {t("settings.last7Days")}
                       </span>
                     </div>
-                    <p className="text-sm font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+                    <p className="text-sm font-medium text-foreground dark:text-primary-foreground">
                       {digest.subject}
                     </p>
-                    <pre className="mt-2 max-h-64 overflow-y-auto whitespace-pre-wrap rounded-md bg-[#FFF4DC] p-3 text-xs leading-relaxed text-[#79695E] dark:bg-[#3A2417] dark:text-[#C9B89F]">
+                    <pre className="mt-2 max-h-64 overflow-y-auto whitespace-pre-wrap rounded-md bg-card p-3 text-xs leading-relaxed text-muted-foreground dark:bg-[#3A2417] dark:text-[#C9B89F]">
                       {digest.body}
                     </pre>
                   </div>
@@ -521,11 +521,11 @@ export function SettingsSection({
               </div>
 
               {/* Account emails (tag-style input) */}
-              <div className="md:col-span-2 rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-4 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
-                <Label className="font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+              <div className="md:col-span-2 rounded-lg border border-border bg-background p-4 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
+                <Label className="font-medium text-foreground dark:text-primary-foreground">
                   {t("settings.accountEmails")}
                 </Label>
-                <p className="mb-3 mt-1 text-xs text-[#79695E] dark:text-[#C9B89F]">
+                <p className="mb-3 mt-1 text-xs text-muted-foreground dark:text-[#C9B89F]">
                   {t("settings.accountEmails.desc")}
                 </p>
                 <AccountEmailsInput
@@ -536,15 +536,15 @@ export function SettingsSection({
               </div>
 
               {/* Prefer career page */}
-              <div className="flex items-start justify-between gap-3 rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-4 md:col-span-2 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
+              <div className="flex items-start justify-between gap-3 rounded-lg border border-border bg-background p-4 md:col-span-2 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
                 <div className="flex-1">
                   <Label
                     htmlFor="set-prefer-career"
-                    className="font-medium text-[#4A2F1A] dark:text-[#FFE4B5]"
+                    className="font-medium text-foreground dark:text-primary-foreground"
                   >
                     {t("settings.preferCareerPage")}
                   </Label>
-                  <p className="mt-1 text-xs text-[#79695E] dark:text-[#C9B89F]">
+                  <p className="mt-1 text-xs text-muted-foreground dark:text-[#C9B89F]">
                     {t("settings.preferCareerPage.desc")}
                   </p>
                 </div>
@@ -555,11 +555,11 @@ export function SettingsSection({
                 />
               </div>
 
-              <div className="md:col-span-2 flex justify-end border-t border-[#CFC5BE] pt-4 dark:border-[#5A3D26]">
+              <div className="md:col-span-2 flex justify-end border-t border-border pt-4 dark:border-[#5A3D26]">
                 <Button
                   onClick={handleSave}
                   disabled={saving}
-                  className="bg-[#C65D00] text-[#FFE4B5] hover:bg-[#FF9F1C] hover:text-[#4A2F1A]"
+                  className="bg-primary text-primary-foreground hover:bg-accent hover:text-foreground"
                 >
                   {saving ? (
                     <Icon name="sync" size={14} className="animate-spin" />

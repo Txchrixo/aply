@@ -20,20 +20,20 @@ export function AplyFooter() {
   const { t } = useI18n();
 
   return (
-    <footer className="mt-auto bg-[#4A2F1A] px-4 py-10 text-[#FFE4B5] md:px-6 md:py-12">
+    <footer className="mt-auto bg-[#4A2F1A] px-4 py-10 text-primary-foreground md:px-6 md:py-12">
       <div className="mx-auto grid w-full max-w-7xl gap-8 md:grid-cols-3">
         {/* Brand */}
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#FFE4B5]/20 bg-[#FFE4B5]/5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#FFE4B5]/20 bg-background/5">
               <Icon name="rocket" size={18} className="text-[#FF9F1C]" />
             </span>
             <span className="font-heading text-xl font-semibold">Aply</span>
           </div>
-          <p className="text-sm text-[#FFE4B5]/70">
+          <p className="text-sm text-primary-foreground/70">
             {t("footer.tagline")} {t("footer.localOnly")}.
           </p>
-          <p className="text-xs text-[#FFE4B5]/50">{t("footer.rights")}</p>
+          <p className="text-xs text-primary-foreground/50">{t("footer.rights")}</p>
         </div>
 
         {/* Links */}
@@ -46,7 +46,7 @@ export function AplyFooter() {
               <a
                 key={l.href}
                 href={l.href}
-                className="text-sm text-[#FFE4B5]/80 transition-colors hover:text-[#FF9F1C]"
+                className="text-sm text-primary-foreground/80 transition-colors hover:text-[#FF9F1C]"
               >
                 {t(l.key)}
               </a>
@@ -59,10 +59,10 @@ export function AplyFooter() {
           <h3 className="font-heading text-sm font-semibold uppercase tracking-wider text-[#FF9F1C]">
             {t("footer.tech")}
           </h3>
-          <p className="text-sm text-[#FFE4B5]/80">
+          <p className="text-sm text-primary-foreground/80">
             {t("footer.poweredBy")}
           </p>
-          <p className="flex items-center gap-1.5 text-xs text-[#FFE4B5]/60">
+          <p className="flex items-center gap-1.5 text-xs text-primary-foreground/60">
             <Icon name="shield-lock" size={12} className="text-[#FF9F1C]" />
             {t("footer.localOnly")}
           </p>
@@ -70,7 +70,7 @@ export function AplyFooter() {
       </div>
 
       <div className="mx-auto mt-8 w-full max-w-7xl border-t border-[#FFE4B5]/10 pt-6">
-        <p className="text-xs text-[#FFE4B5]/50">
+        <p className="text-xs text-primary-foreground/50">
           {t("footer.disclaimer")}
         </p>
       </div>

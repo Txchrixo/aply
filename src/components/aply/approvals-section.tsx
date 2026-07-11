@@ -89,23 +89,23 @@ function ApprovalCard({
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="gap-4 rounded-xl border-[#CFC5BE] bg-[#FFF4DC] p-5 shadow-sm">
+      <Card className="gap-4 rounded-xl border-border bg-card p-5 shadow-sm">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <span
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-semibold text-[#FFE4B5]"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-xs font-semibold text-primary-foreground"
                 style={{ backgroundColor: logoColor(job.company ?? job.title) }}
                 aria-hidden
               >
                 {initials(job.company ?? job.title)}
               </span>
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-[#4A2F1A]">
+                <p className="truncate text-sm font-medium text-foreground">
                   {job.company ?? "-"}
                 </p>
-                <p className="truncate text-xs text-[#79695E]">
+                <p className="truncate text-xs text-muted-foreground">
                   {t("approvals.via")} {job.platform?.name ?? t("approvals.unknownPlatform")}
                 </p>
               </div>
@@ -119,10 +119,10 @@ function ApprovalCard({
 
         {/* Job title + meta */}
         <div>
-          <h3 className="font-heading text-lg font-semibold leading-tight text-[#4A2F1A]">
+          <h3 className="font-heading text-lg font-semibold leading-tight text-foreground">
             {job.title}
           </h3>
-          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-[#79695E]">
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
             {job.location && <span>{job.location}</span>}
             {job.salary && <span>· {job.salary}</span>}
             {job.contractType && (
@@ -143,15 +143,15 @@ function ApprovalCard({
         {/* Cover letter */}
         <div>
           <div className="mb-1.5 flex items-center justify-between">
-            <span className="text-xs font-medium uppercase tracking-wider text-[#79695E]">
+            <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               {t("approvals.coverLetter")}
             </span>
-            <span className="text-[11px] text-[#79695E]">
+            <span className="text-[11px] text-muted-foreground">
               {cover.length.toLocaleString()} {t("approvals.chars")}
             </span>
           </div>
-          <ScrollArea className="h-40 rounded-md border border-[#CFC5BE] bg-[#FFE4B5]">
-            <pre className="whitespace-pre-wrap p-3 text-sm leading-relaxed text-[#4A2F1A]">
+          <ScrollArea className="h-40 rounded-md border border-border bg-background">
+            <pre className="whitespace-pre-wrap p-3 text-sm leading-relaxed text-foreground">
               {cover || t("approvals.empty.placeholder")}
             </pre>
           </ScrollArea>
@@ -160,13 +160,13 @@ function ApprovalCard({
         {/* Detected skills */}
         {skills.length > 0 && (
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#79695E]">
+            <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
               {t("approvals.skills")}
             </span>
             {skills.map((s) => (
               <span
                 key={s}
-                className="inline-flex items-center rounded border border-[#CFC5BE] bg-[#FFE4B5] px-1.5 py-0.5 text-[11px] font-medium text-[#4A2F1A]"
+                className="inline-flex items-center rounded border border-border bg-background px-1.5 py-0.5 text-[11px] font-medium text-foreground"
               >
                 {s}
               </span>
@@ -175,11 +175,11 @@ function ApprovalCard({
         )}
 
         {/* Actions */}
-        <div className="flex flex-wrap items-center gap-2 border-t border-[#CFC5BE] pt-4">
+        <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
           <Button
             onClick={() => run("approve", () => onApprove(app.id))}
             disabled={busy !== null}
-            className="bg-[#C65D00] text-[#FFE4B5] hover:bg-[#FF9F1C] hover:text-[#4A2F1A]"
+            className="bg-primary text-primary-foreground hover:bg-accent hover:text-foreground"
           >
             {busy === "approve" ? (
               <Icon name="sync" size={14} className="animate-spin" />
@@ -205,7 +205,7 @@ function ApprovalCard({
             variant="ghost"
             onClick={() => run("regen", () => onRegenerate(job.id, app.id))}
             disabled={busy !== null}
-            className="text-[#79695E] hover:bg-[#FFE4B5] hover:text-[#C65D00]"
+            className="text-muted-foreground hover:bg-background hover:text-primary"
           >
             {busy === "regen" ? (
               <Icon name="sync" size={14} className="animate-spin" />
@@ -221,7 +221,7 @@ function ApprovalCard({
               onClick={() => run("whatsapp", () => onNotify(app.id, "whatsapp"))}
               disabled={busy !== null}
               aria-label={t("approvals.whatsapp")}
-              className="h-9 w-9 text-[#79695E] hover:bg-[#FFE4B5] hover:text-[#C65D00]"
+              className="h-9 w-9 text-muted-foreground hover:bg-background hover:text-primary"
             >
               {busy === "whatsapp" ? (
                 <Icon name="sync" size={14} className="animate-spin" />
@@ -235,7 +235,7 @@ function ApprovalCard({
               onClick={() => run("email", () => onNotify(app.id, "email"))}
               disabled={busy !== null}
               aria-label={t("approvals.email")}
-              className="h-9 w-9 text-[#79695E] hover:bg-[#FFE4B5] hover:text-[#C65D00]"
+              className="h-9 w-9 text-muted-foreground hover:bg-background hover:text-primary"
             >
               {busy === "email" ? (
                 <Icon name="sync" size={14} className="animate-spin" />
@@ -340,7 +340,7 @@ export function ApprovalsSection({ onApprove }: ApprovalsSectionProps) {
     <section
       id="approvals"
       aria-labelledby="approvals-heading"
-      className="bg-[#FFF4DC]/60 px-4 py-12 md:px-6 md:py-16"
+      className="bg-card/60 px-4 py-12 md:px-6 md:py-16"
     >
       <div className="mx-auto w-full max-w-7xl">
         <SectionHeading
@@ -356,27 +356,27 @@ export function ApprovalsSection({ onApprove }: ApprovalsSectionProps) {
               {Array.from({ length: 4 }).map((_, i) => (
                 <Skeleton
                   key={i}
-                  className="h-80 rounded-xl border border-[#CFC5BE] bg-[#FFF4DC]"
+                  className="h-80 rounded-xl border border-border bg-card"
                 />
               ))}
             </div>
           ) : items.length === 0 ? (
-            <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-[#CFC5BE] bg-[#FFF4DC] px-6 py-16 text-center">
+            <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center">
               <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#2ea043]/12 text-[#2ea043]">
                 <Icon name="check" size={24} />
               </span>
               <div>
-                <p className="font-heading text-lg font-semibold text-[#4A2F1A]">
+                <p className="font-heading text-lg font-semibold text-foreground">
                   {t("approvals.empty.title")}
                 </p>
-                <p className="text-sm text-[#79695E]">
+                <p className="text-sm text-muted-foreground">
                   {t("approvals.empty.desc")}
                 </p>
               </div>
               <Button
                 asChild
                 variant="outline"
-                className="border-[#C65D00] text-[#C65D00] hover:bg-[#FFE4B5]"
+                className="border-[#C65D00] text-primary hover:bg-background"
               >
                 <a href="#history">
                   <Icon name="history" size={14} />

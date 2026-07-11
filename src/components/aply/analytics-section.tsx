@@ -79,12 +79,12 @@ function ChartCard({
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.3, delay }}
     >
-      <Card className={cn("gap-3 rounded-xl border-[#CFC5BE] bg-[#FFF4DC] p-5 shadow-sm dark:bg-[#3A2417]", className)}>
+      <Card className={cn("gap-3 rounded-xl border-border bg-card p-5 shadow-sm dark:bg-[#3A2417]", className)}>
         <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#FFE4B5] text-[#C65D00] dark:bg-[#4A2F1A]">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-background text-primary dark:bg-[#4A2F1A]">
             <Icon name={icon} size={14} />
           </span>
-          <h3 className="font-heading text-sm font-semibold text-[#4A2F1A] dark:text-[#FFE4B5]">
+          <h3 className="font-heading text-sm font-semibold text-foreground dark:text-primary-foreground">
             {title}
           </h3>
         </div>
@@ -114,9 +114,9 @@ function KpiCard({
       viewport={{ once: true }}
       transition={{ duration: 0.25, delay }}
     >
-      <Card className="gap-2 rounded-xl border-[#CFC5BE] bg-[#FFF4DC] p-4 shadow-sm dark:bg-[#3A2417]">
+      <Card className="gap-2 rounded-xl border-border bg-card p-4 shadow-sm dark:bg-[#3A2417]">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] font-medium uppercase tracking-wider text-[#79695E] dark:text-[#C9B89F]">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground dark:text-[#C9B89F]">
             {label}
           </span>
           <span
@@ -126,7 +126,7 @@ function KpiCard({
             <Icon name={icon} size={12} />
           </span>
         </div>
-        <div className="font-heading text-2xl font-semibold text-[#4A2F1A] dark:text-[#FFE4B5]">
+        <div className="font-heading text-2xl font-semibold text-foreground dark:text-primary-foreground">
           {value}
         </div>
       </Card>
@@ -138,12 +138,12 @@ function KpiCard({
 function WarmTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; color: string }>; label?: string }) {
   if (!active || !payload || payload.length === 0) return null;
   return (
-    <div className="rounded-lg border border-[#CFC5BE] bg-[#FFF4DC] px-3 py-2 text-xs shadow-lg dark:border-[#5A3D26] dark:bg-[#3A2417]">
-      {label && <p className="mb-1 font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">{label}</p>}
+    <div className="rounded-lg border border-border bg-card px-3 py-2 text-xs shadow-lg dark:border-[#5A3D26] dark:bg-[#3A2417]">
+      {label && <p className="mb-1 font-medium text-foreground dark:text-primary-foreground">{label}</p>}
       {payload.map((p, i) => (
-        <p key={i} className="flex items-center gap-1.5 text-[#79695E] dark:text-[#C9B89F]">
+        <p key={i} className="flex items-center gap-1.5 text-muted-foreground dark:text-[#C9B89F]">
           <span className="inline-block h-2 w-2 rounded-full" style={{ backgroundColor: p.color }} />
-          {p.name}: <span className="font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">{p.value}</span>
+          {p.name}: <span className="font-medium text-foreground dark:text-primary-foreground">{p.value}</span>
         </p>
       ))}
     </div>
@@ -182,12 +182,12 @@ export function AnalyticsSection() {
           />
           <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-20 rounded-xl border border-[#CFC5BE]" />
+              <Skeleton key={i} className="h-20 rounded-xl border border-border" />
             ))}
           </div>
           <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <Skeleton className="h-72 rounded-xl border border-[#CFC5BE]" />
-            <Skeleton className="h-72 rounded-xl border border-[#CFC5BE]" />
+            <Skeleton className="h-72 rounded-xl border border-border" />
+            <Skeleton className="h-72 rounded-xl border border-border" />
           </div>
         </div>
       </section>
@@ -204,27 +204,27 @@ export function AnalyticsSection() {
             title={t("analytics.title")}
             subtitle={t("analytics.subtitle")}
           />
-          <div className="mt-8 flex flex-col items-center gap-4 rounded-2xl border border-dashed border-[#CFC5BE] bg-[#FFF4DC] px-6 py-20 text-center dark:bg-[#3A2417]">
+          <div className="mt-8 flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-card px-6 py-20 text-center dark:bg-[#3A2417]">
             <div className="relative">
-              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FFE4B5] text-[#C65D00] shadow-sm dark:bg-[#4A2F1A]">
+              <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-background text-primary shadow-sm dark:bg-[#4A2F1A]">
                 <Icon name="graph" size={28} />
               </span>
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#FF9F1C] text-[10px] font-bold text-[#4A2F1A]">
+              <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-foreground">
                 !
               </span>
             </div>
             <div className="space-y-1.5">
-              <p className="font-heading text-lg font-semibold text-[#4A2F1A] dark:text-[#FFE4B5]">
+              <p className="font-heading text-lg font-semibold text-foreground dark:text-primary-foreground">
                 {t("analytics.emptyTitle")}
               </p>
-              <p className="max-w-md text-sm text-[#79695E] dark:text-[#C9B89F]">
+              <p className="max-w-md text-sm text-muted-foreground dark:text-[#C9B89F]">
                 {t("analytics.empty")}
               </p>
             </div>
             <Button
               asChild
               variant="outline"
-              className="border-[#C65D00] text-[#C65D00] hover:bg-[#FFE4B5] dark:border-[#FF9F1C] dark:text-[#FF9F1C]"
+              className="border-[#C65D00] text-primary hover:bg-background dark:border-[#FF9F1C] dark:text-[#FF9F1C]"
             >
               <a href="#approvals">
                 <Icon name="inbox" size={14} />
@@ -240,7 +240,7 @@ export function AnalyticsSection() {
   const s = data.summary;
 
   return (
-    <section id="analytics" aria-labelledby="analytics-heading" className="bg-[#FFF4DC]/60 px-4 py-12 md:px-6 md:py-16 dark:bg-[#3A2417]/40">
+    <section id="analytics" aria-labelledby="analytics-heading" className="bg-card/60 px-4 py-12 md:px-6 md:py-16 dark:bg-[#3A2417]/40">
       <div className="mx-auto w-full max-w-7xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading
@@ -252,7 +252,7 @@ export function AnalyticsSection() {
           <Button
             variant="outline"
             onClick={() => window.print()}
-            className="no-print h-9 shrink-0 gap-2 border-[#8B4513] text-[#8B4513] hover:bg-[#FFE4B5] dark:border-[#D2691E] dark:text-[#D2691E]"
+            className="no-print h-9 shrink-0 gap-2 border-[#8B4513] text-[#8B4513] hover:bg-background dark:border-[#D2691E] dark:text-[#D2691E]"
           >
             <Icon name="download" size={14} />
             <span className="hidden sm:inline">{t("analytics.exportPdf")}</span>
@@ -316,7 +316,7 @@ export function AnalyticsSection() {
                   wrapperStyle={{ fontSize: 11 }}
                   iconType="circle"
                   formatter={(v: string) => (
-                    <span className="text-[#79695E] dark:text-[#C9B89F]">{v}</span>
+                    <span className="text-muted-foreground dark:text-[#C9B89F]">{v}</span>
                   )}
                 />
               </PieChart>
@@ -383,13 +383,13 @@ export function AnalyticsSection() {
                 const pct = (c.count / max) * 100;
                 return (
                   <div key={c.type} className="flex items-center gap-2">
-                    <div className="h-2 w-20 overflow-hidden rounded-full bg-[#FFE4B5] dark:bg-[#4A2F1A]">
+                    <div className="h-2 w-20 overflow-hidden rounded-full bg-background dark:bg-[#4A2F1A]">
                       <div
                         className="h-full rounded-full"
                         style={{ width: `${pct}%`, backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
                       />
                     </div>
-                    <span className="text-xs text-[#79695E] dark:text-[#C9B89F]">
+                    <span className="text-xs text-muted-foreground dark:text-[#C9B89F]">
                       {c.type} ({c.count})
                     </span>
                   </div>
@@ -403,12 +403,12 @@ export function AnalyticsSection() {
               {data.languageDistribution.map((l, i) => (
                 <div key={l.lang} className="flex flex-col items-center gap-1">
                   <div
-                    className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold uppercase text-[#FFE4B5]"
+                    className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold uppercase text-primary-foreground"
                     style={{ backgroundColor: CHART_COLORS[i % CHART_COLORS.length] }}
                   >
                     {l.lang}
                   </div>
-                  <span className="text-xs font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">{l.count}</span>
+                  <span className="text-xs font-medium text-foreground dark:text-primary-foreground">{l.count}</span>
                 </div>
               ))}
             </div>

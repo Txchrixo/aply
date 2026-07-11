@@ -61,19 +61,19 @@ export function OnboardingBanner() {
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
-          className="overflow-hidden border-b border-[#CFC5BE] bg-gradient-to-r from-[#FF9F1C]/15 via-[#FFF4DC] to-[#C65D00]/10 dark:border-[#5A3D26] dark:from-[#FF9F1C]/10 dark:via-[#3A2417] dark:to-[#C65D00]/15"
+          className="overflow-hidden border-b border-border bg-gradient-to-r from-[#FF9F1C]/15 via-[#FFF4DC] to-[#C65D00]/10 dark:border-[#5A3D26] dark:from-[#FF9F1C]/10 dark:via-[#3A2417] dark:to-[#C65D00]/15"
         >
           <div className="mx-auto w-full max-w-7xl px-4 py-4 md:px-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div className="flex items-start gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#C65D00] text-[#FFE4B5] shadow-sm">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
                   <Icon name="rocket" size={18} />
                 </span>
                 <div>
-                  <h2 className="font-heading text-base font-semibold text-[#4A2F1A] dark:text-[#FFE4B5]">
+                  <h2 className="font-heading text-base font-semibold text-foreground dark:text-primary-foreground">
                     {t("onboarding.title")}
                   </h2>
-                  <p className="text-sm text-[#79695E] dark:text-[#C9B89F]">
+                  <p className="text-sm text-muted-foreground dark:text-[#C9B89F]">
                     {t("onboarding.desc")}
                   </p>
                 </div>
@@ -84,15 +84,15 @@ export function OnboardingBanner() {
                   <a
                     key={i}
                     href={s.href}
-                    className="group flex items-center gap-2 rounded-lg border border-[#CFC5BE] bg-[#FFF4DC] px-3 py-1.5 text-xs transition-all hover:border-[#C65D00] hover:shadow-sm dark:border-[#5A3D26] dark:bg-[#4A2F1A]"
+                    className="group flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-xs transition-all hover:border-[#C65D00] hover:shadow-sm dark:border-[#5A3D26] dark:bg-[#4A2F1A]"
                   >
-                    <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#FFE4B5] text-[#C65D00] dark:bg-[#3A2417]">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-md bg-background text-primary dark:bg-[#3A2417]">
                       <Icon name={s.icon} size={12} />
                     </span>
-                    <span className="hidden text-[#4A2F1A] dark:text-[#FFE4B5] sm:inline">
+                    <span className="hidden text-foreground dark:text-primary-foreground sm:inline">
                       {s.title}
                     </span>
-                    <span className="text-[#79695E] dark:text-[#C9B89F]">
+                    <span className="text-muted-foreground dark:text-[#C9B89F]">
                       {s.desc}
                     </span>
                   </a>
@@ -100,7 +100,7 @@ export function OnboardingBanner() {
                 <button
                   onClick={dismiss}
                   aria-label={t("onboarding.dismiss")}
-                  className="ml-1 flex h-8 w-8 items-center justify-center rounded-md text-[#79695E] transition-colors hover:bg-[#FFE4B5] hover:text-[#C65D00] dark:hover:bg-[#4A2F1A]"
+                  className="ml-1 flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-primary dark:hover:bg-[#4A2F1A]"
                 >
                   <Icon name="x" size={14} />
                 </button>

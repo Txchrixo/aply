@@ -261,19 +261,19 @@ export function ApplicationDetailDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full overflow-y-auto border-[#CFC5BE] bg-[#FFF4DC] p-0 sm:max-w-lg dark:border-[#5A3D26] dark:bg-[#3A2417]"
+        className="w-full overflow-y-auto border-border bg-card p-0 sm:max-w-lg dark:border-[#5A3D26] dark:bg-[#3A2417]"
         aria-describedby={undefined}
       >
         {/* Always-present title for accessibility */}
-        <SheetHeader className="border-b border-[#CFC5BE] px-6 py-4 dark:border-[#5A3D26]">
-          <SheetTitle className="font-heading text-xl font-semibold text-[#4A2F1A] dark:text-[#FFE4B5]">
+        <SheetHeader className="border-b border-border px-6 py-4 dark:border-[#5A3D26]">
+          <SheetTitle className="font-heading text-xl font-semibold text-foreground dark:text-primary-foreground">
             {loading
               ? "Loading…"
               : !app || !job
               ? "Application not found"
               : job.title}
           </SheetTitle>
-          <SheetDescription className="mt-1 text-sm text-[#79695E] dark:text-[#C9B89F]">
+          <SheetDescription className="mt-1 text-sm text-muted-foreground dark:text-[#C9B89F]">
             {loading
               ? "Fetching application details"
               : !app || !job
@@ -283,21 +283,21 @@ export function ApplicationDetailDrawer({
         </SheetHeader>
         {loading ? (
           <div className="flex h-full items-center justify-center p-8">
-            <Icon name="sync" size={24} className="animate-spin text-[#C65D00] dark:text-[#FF9F1C]" />
+            <Icon name="sync" size={24} className="animate-spin text-primary dark:text-[#FF9F1C]" />
           </div>
         ) : !app || !job ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
-            <Icon name="inbox" size={32} className="text-[#79695E] dark:text-[#C9B89F]" />
-            <p className="text-sm text-[#79695E] dark:text-[#C9B89F]">Application not found.</p>
+            <Icon name="inbox" size={32} className="text-muted-foreground dark:text-[#C9B89F]" />
+            <p className="text-sm text-muted-foreground dark:text-[#C9B89F]">Application not found.</p>
           </div>
         ) : (
           <>
             <div className="flex items-start justify-between gap-3 px-6 pb-3">
               <div className="min-w-0 flex-1">
-                <p className="font-heading text-xl font-semibold text-[#4A2F1A] dark:text-[#FFE4B5]">
+                <p className="font-heading text-xl font-semibold text-foreground dark:text-primary-foreground">
                   {job.title}
                 </p>
-                <p className="mt-1 text-sm text-[#79695E] dark:text-[#C9B89F]">
+                <p className="mt-1 text-sm text-muted-foreground dark:text-[#C9B89F]">
                   {job.company ?? "-"}
                   {platformName ? ` · via ${platformName}` : ""}
                 </p>
@@ -311,12 +311,12 @@ export function ApplicationDetailDrawer({
               {job.contractType && <ContractBadge type={job.contractType} />}
               {app.language && <LangBadge lang={app.language} />}
               {job.location && (
-                <span className="text-xs text-[#79695E] dark:text-[#C9B89F]">
+                <span className="text-xs text-muted-foreground dark:text-[#C9B89F]">
                   · {job.location}
                 </span>
               )}
               {job.salary && (
-                <span className="text-xs text-[#79695E] dark:text-[#C9B89F]">
+                <span className="text-xs text-muted-foreground dark:text-[#C9B89F]">
                   · {job.salary}
                 </span>
               )}
@@ -327,11 +327,11 @@ export function ApplicationDetailDrawer({
                 {/* Job description */}
                 {job.description && (
                   <div>
-                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#C65D00] dark:text-[#FF9F1C]">
+                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary dark:text-[#FF9F1C]">
                       <Icon name="book" size={12} />
                       Job description
                     </h3>
-                    <p className="rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-3 text-sm leading-relaxed text-[#4A2F1A] dark:border-[#5A3D26] dark:bg-[#4A2F1A] dark:text-[#FFE4B5]">
+                    <p className="rounded-lg border border-border bg-background p-3 text-sm leading-relaxed text-foreground dark:border-[#5A3D26] dark:bg-[#4A2F1A] dark:text-primary-foreground">
                       {job.description}
                     </p>
                   </div>
@@ -340,12 +340,12 @@ export function ApplicationDetailDrawer({
                 {/* Cover letter */}
                 {app.coverLetter && (
                   <div>
-                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#C65D00] dark:text-[#FF9F1C]">
+                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary dark:text-[#FF9F1C]">
                       <Icon name="pencil" size={12} />
                       Cover letter
                     </h3>
-                    <ScrollArea className="h-64 rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
-                      <pre className="whitespace-pre-wrap p-3 text-sm leading-relaxed text-[#4A2F1A] dark:text-[#FFE4B5]">
+                    <ScrollArea className="h-64 rounded-lg border border-border bg-background dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
+                      <pre className="whitespace-pre-wrap p-3 text-sm leading-relaxed text-foreground dark:text-primary-foreground">
                         {app.coverLetter}
                       </pre>
                     </ScrollArea>
@@ -355,7 +355,7 @@ export function ApplicationDetailDrawer({
                 {/* Form fields (filled values from the application) */}
                 {app.formFields && app.formFields.length > 0 && (
                   <div>
-                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#C65D00] dark:text-[#FF9F1C]">
+                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary dark:text-[#FF9F1C]">
                       <Icon name="list-unordered" size={12} />
                       Form fields
                     </h3>
@@ -363,16 +363,16 @@ export function ApplicationDetailDrawer({
                       {app.formFields.map((field, i) => (
                         <div
                           key={i}
-                          className="flex items-start gap-2 rounded-md border border-[#CFC5BE] bg-[#FFE4B5] px-3 py-2 dark:border-[#5A3D26] dark:bg-[#4A2F1A]"
+                          className="flex items-start gap-2 rounded-md border border-border bg-background px-3 py-2 dark:border-[#5A3D26] dark:bg-[#4A2F1A]"
                         >
-                          <span className="flex h-5 w-16 shrink-0 items-center justify-center rounded bg-[#C65D00]/10 text-[10px] font-medium uppercase text-[#C65D00] dark:bg-[#FF9F1C]/15 dark:text-[#FF9F1C]">
+                          <span className="flex h-5 w-16 shrink-0 items-center justify-center rounded bg-primary/10 text-[10px] font-medium uppercase text-primary dark:bg-accent/15 dark:text-[#FF9F1C]">
                             {field.type ?? "text"}
                           </span>
                           <div className="min-w-0 flex-1">
-                            <p className="truncate text-xs font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+                            <p className="truncate text-xs font-medium text-foreground dark:text-primary-foreground">
                               {field.selector}
                             </p>
-                            <p className="truncate text-xs text-[#79695E] dark:text-[#C9B89F]">
+                            <p className="truncate text-xs text-muted-foreground dark:text-[#C9B89F]">
                               {field.value}
                             </p>
                           </div>
@@ -384,27 +384,27 @@ export function ApplicationDetailDrawer({
 
                 {/* Import status (when still in pipeline) */}
                 {isImporting && (
-                  <div className="rounded-lg border border-[#C65D00]/40 bg-[#C65D00]/8 p-3 dark:border-[#FF9F1C]/40 dark:bg-[#FF9F1C]/10">
+                  <div className="rounded-lg border border-[#C65D00]/40 bg-primary/8 p-3 dark:border-[#FF9F1C]/40 dark:bg-accent/10">
                     <div className="mb-2 flex items-center gap-2">
                       <Icon
                         name="sync"
                         size={14}
-                        className="animate-spin text-[#C65D00] dark:text-[#FF9F1C]"
+                        className="animate-spin text-primary dark:text-[#FF9F1C]"
                       />
-                      <h3 className="text-xs font-semibold uppercase tracking-wider text-[#C65D00] dark:text-[#FF9F1C]">
+                      <h3 className="text-xs font-semibold uppercase tracking-wider text-primary dark:text-[#FF9F1C]">
                         Importing
                       </h3>
-                      <span className="ml-auto text-xs font-medium text-[#79695E] dark:text-[#C9B89F]">
+                      <span className="ml-auto text-xs font-medium text-muted-foreground dark:text-[#C9B89F]">
                         {importProgress ?? 0}%
                       </span>
                     </div>
-                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#FFE4B5] dark:bg-[#4A2F1A]">
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-background dark:bg-[#4A2F1A]">
                       <div
-                        className="h-full rounded-full bg-[#C65D00] transition-all dark:bg-[#FF9F1C]"
+                        className="h-full rounded-full bg-primary transition-all dark:bg-accent"
                         style={{ width: `${importProgress ?? 0}%` }}
                       />
                     </div>
-                    <p className="mt-2 text-xs text-[#79695E] dark:text-[#C9B89F]">
+                    <p className="mt-2 text-xs text-muted-foreground dark:text-[#C9B89F]">
                       {importStepLabel(importStep)}…
                     </p>
                   </div>
@@ -413,14 +413,14 @@ export function ApplicationDetailDrawer({
                 {/* Company info */}
                 {company && (
                   <div>
-                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#C65D00] dark:text-[#FF9F1C]">
+                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary dark:text-[#FF9F1C]">
                       <Icon name="organization" size={12} />
                       Company
                     </h3>
-                    <div className="rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-3 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
+                    <div className="rounded-lg border border-border bg-background p-3 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
                       <div className="flex items-start gap-3">
                         <span
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-semibold text-[#FFE4B5]"
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-semibold text-primary-foreground"
                           style={{ backgroundColor: logoColor(company.name) }}
                           aria-hidden
                         >
@@ -433,29 +433,29 @@ export function ApplicationDetailDrawer({
                                 href={company.website}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="truncate font-medium text-[#4A2F1A] underline-offset-2 hover:underline dark:text-[#FFE4B5]"
+                                className="truncate font-medium text-foreground underline-offset-2 hover:underline dark:text-primary-foreground"
                               >
                                 {company.name}
                               </a>
                             ) : (
-                              <p className="truncate font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+                              <p className="truncate font-medium text-foreground dark:text-primary-foreground">
                                 {company.name}
                               </p>
                             )}
                             {company.industry && (
-                              <span className="inline-flex items-center rounded border border-[#C65D00]/30 bg-[#C65D00]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#C65D00] dark:border-[#FF9F1C]/40 dark:bg-[#FF9F1C]/15 dark:text-[#FF9F1C]">
+                              <span className="inline-flex items-center rounded border border-[#C65D00]/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary dark:border-[#FF9F1C]/40 dark:bg-accent/15 dark:text-[#FF9F1C]">
                                 {company.industry}
                               </span>
                             )}
                             {company.size && (
-                              <span className="inline-flex items-center rounded border border-[#79695E]/30 bg-[#79695E]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#79695E] dark:border-[#C9B89F]/40 dark:bg-[#C9B89F]/15 dark:text-[#C9B89F]">
+                              <span className="inline-flex items-center rounded border border-[#79695E]/30 bg-[#79695E]/10 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground dark:border-[#C9B89F]/40 dark:bg-[#C9B89F]/15 dark:text-[#C9B89F]">
                                 <Icon name="people" size={9} className="mr-1" />
                                 {company.size}
                               </span>
                             )}
                           </div>
                           {company.careerPages.length > 0 && (
-                            <p className="mt-1.5 flex flex-wrap items-center gap-1 text-xs text-[#79695E] dark:text-[#C9B89F]">
+                            <p className="mt-1.5 flex flex-wrap items-center gap-1 text-xs text-muted-foreground dark:text-[#C9B89F]">
                               <Icon name="browser" size={11} />
                               <span className="truncate">{company.careerPages[0].url}</span>
                               {company.careerPages[0].atsSystem && (
@@ -475,7 +475,7 @@ export function ApplicationDetailDrawer({
                             size="sm"
                             variant="outline"
                             asChild
-                            className="h-7 gap-1 border-[#CFC5BE] px-2 text-xs text-[#4A2F1A] hover:bg-[#FFF4DC] dark:border-[#5A3D26] dark:text-[#FFE4B5] dark:hover:bg-[#3A2417]"
+                            className="h-7 gap-1 border-border px-2 text-xs text-foreground hover:bg-card dark:border-[#5A3D26] dark:text-primary-foreground dark:hover:bg-[#3A2417]"
                           >
                             <a href={company.website} target="_blank" rel="noopener noreferrer">
                               <Icon name="globe" size={11} />
@@ -489,7 +489,7 @@ export function ApplicationDetailDrawer({
                             size="sm"
                             variant="outline"
                             asChild
-                            className="h-7 gap-1 border-[#CFC5BE] px-2 text-xs text-[#4A2F1A] hover:bg-[#FFF4DC] dark:border-[#5A3D26] dark:text-[#FFE4B5] dark:hover:bg-[#3A2417]"
+                            className="h-7 gap-1 border-border px-2 text-xs text-foreground hover:bg-card dark:border-[#5A3D26] dark:text-primary-foreground dark:hover:bg-[#3A2417]"
                           >
                             <a href={cp.url} target="_blank" rel="noopener noreferrer">
                               <Icon name="browser" size={11} />
@@ -502,7 +502,7 @@ export function ApplicationDetailDrawer({
                             size="sm"
                             variant="outline"
                             asChild
-                            className="h-7 gap-1 border-[#CFC5BE] px-2 text-xs text-[#4A2F1A] hover:bg-[#FFF4DC] dark:border-[#5A3D26] dark:text-[#FFE4B5] dark:hover:bg-[#3A2417]"
+                            className="h-7 gap-1 border-border px-2 text-xs text-foreground hover:bg-card dark:border-[#5A3D26] dark:text-primary-foreground dark:hover:bg-[#3A2417]"
                           >
                             <a href={company.linkedinUrl} target="_blank" rel="noopener noreferrer">
                               <Icon name="link-external" size={11} />
@@ -518,36 +518,36 @@ export function ApplicationDetailDrawer({
                 {/* Application source */}
                 {applicationSource && (
                   <div>
-                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#C65D00] dark:text-[#FF9F1C]">
+                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary dark:text-[#FF9F1C]">
                       <Icon name="tag" size={12} />
                       Application source
                     </h3>
-                    <div className="rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-3 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
+                    <div className="rounded-lg border border-border bg-background p-3 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
                       {applicationSource === "career_page" ? (
                         <div className="flex items-start gap-2">
                           <span className="inline-flex items-center gap-1 rounded border border-[#2ea043]/30 bg-[#2ea043]/12 px-2 py-0.5 text-[11px] font-medium text-[#2ea043] dark:border-[#2ea043]/40 dark:bg-[#2ea043]/15 dark:text-[#2ea043]">
                             <Icon name="check-circle" size={11} />
                             Direct application (career page)
                           </span>
-                          <p className="mt-0.5 text-xs text-[#79695E] dark:text-[#C9B89F]">
+                          <p className="mt-0.5 text-xs text-muted-foreground dark:text-[#C9B89F]">
                             Applied directly on the company's career page, bypassing the job board.
                           </p>
                         </div>
                       ) : applicationSource === "job_board" ? (
                         <div className="flex items-start gap-2">
-                          <span className="inline-flex items-center gap-1 rounded border border-[#C65D00]/30 bg-[#C65D00]/10 px-2 py-0.5 text-[11px] font-medium text-[#C65D00] dark:border-[#FF9F1C]/40 dark:bg-[#FF9F1C]/15 dark:text-[#FF9F1C]">
+                          <span className="inline-flex items-center gap-1 rounded border border-[#C65D00]/30 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary dark:border-[#FF9F1C]/40 dark:bg-accent/15 dark:text-[#FF9F1C]">
                             <Icon name="briefcase" size={11} />
                             Via job board
                             {platformName ? ` · ${platformName}` : ""}
                           </span>
                         </div>
                       ) : (
-                        <span className="inline-flex items-center rounded border border-[#79695E]/30 bg-[#79695E]/10 px-2 py-0.5 text-[11px] font-medium text-[#79695E] dark:border-[#C9B89F]/40 dark:bg-[#C9B89F]/15 dark:text-[#C9B89F]">
+                        <span className="inline-flex items-center rounded border border-[#79695E]/30 bg-[#79695E]/10 px-2 py-0.5 text-[11px] font-medium text-muted-foreground dark:border-[#C9B89F]/40 dark:bg-[#C9B89F]/15 dark:text-[#C9B89F]">
                           {SOURCE_LABEL[applicationSource] ?? applicationSource}
                         </span>
                       )}
                       {showPreferCareerHint && (
-                        <p className="mt-2 flex items-start gap-1.5 text-xs text-[#79695E] dark:text-[#C9B89F]">
+                        <p className="mt-2 flex items-start gap-1.5 text-xs text-muted-foreground dark:text-[#C9B89F]">
                           <Icon name="info" size={11} className="mt-0.5 shrink-0" />
                           Same job found on company career page. Aply prefers applying directly.
                         </p>
@@ -559,7 +559,7 @@ export function ApplicationDetailDrawer({
                 {/* Cross-references */}
                 {crossRefs.length > 0 && (
                   <div>
-                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#C65D00] dark:text-[#FF9F1C]">
+                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary dark:text-[#FF9F1C]">
                       <Icon name="link" size={12} />
                       Also found on
                     </h3>
@@ -571,21 +571,21 @@ export function ApplicationDetailDrawer({
                         return (
                           <div
                             key={ref.id}
-                            className="rounded-md border border-[#CFC5BE] bg-[#FFE4B5] p-2.5 dark:border-[#5A3D26] dark:bg-[#4A2F1A]"
+                            className="rounded-md border border-border bg-background p-2.5 dark:border-[#5A3D26] dark:bg-[#4A2F1A]"
                           >
                             <div className="flex items-center gap-2">
-                              <span className="inline-flex items-center gap-1 rounded border border-[#79695E]/30 bg-[#79695E]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#79695E] dark:border-[#C9B89F]/40 dark:bg-[#C9B89F]/15 dark:text-[#C9B89F]">
+                              <span className="inline-flex items-center gap-1 rounded border border-[#79695E]/30 bg-[#79695E]/10 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground dark:border-[#C9B89F]/40 dark:bg-[#C9B89F]/15 dark:text-[#C9B89F]">
                                 <Icon name={sourceIcon} size={10} />
                                 {sourceLabel}
                               </span>
-                              <p className="min-w-0 flex-1 truncate text-xs font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+                              <p className="min-w-0 flex-1 truncate text-xs font-medium text-foreground dark:text-primary-foreground">
                                 {ref.offer.title ?? ref.offer.platform?.name ?? "Same role"}
                               </p>
                               <Button
                                 size="sm"
                                 variant="outline"
                                 asChild
-                                className="h-6 shrink-0 gap-1 border-[#CFC5BE] px-2 text-[10px] text-[#C65D00] hover:bg-[#FFF4DC] dark:border-[#5A3D26] dark:text-[#FF9F1C] dark:hover:bg-[#3A2417]"
+                                className="h-6 shrink-0 gap-1 border-border px-2 text-[10px] text-primary hover:bg-card dark:border-[#5A3D26] dark:text-[#FF9F1C] dark:hover:bg-[#3A2417]"
                               >
                                 <a href={ref.url} target="_blank" rel="noopener noreferrer">
                                   <Icon name="link-external" size={10} />
@@ -593,22 +593,22 @@ export function ApplicationDetailDrawer({
                                 </a>
                               </Button>
                             </div>
-                            <p className="mt-1 truncate text-[10px] text-[#79695E] dark:text-[#C9B89F]">
+                            <p className="mt-1 truncate text-[10px] text-muted-foreground dark:text-[#C9B89F]">
                               {ref.url}
                             </p>
                             {ref.offer.platform?.name && (
-                              <p className="mt-0.5 text-[10px] text-[#79695E] dark:text-[#C9B89F]">
+                              <p className="mt-0.5 text-[10px] text-muted-foreground dark:text-[#C9B89F]">
                                 on {ref.offer.platform.name}
                               </p>
                             )}
                             <div className="mt-1.5 flex items-center gap-2">
-                              <div className="h-1 flex-1 overflow-hidden rounded-full bg-[#FFF4DC] dark:bg-[#3A2417]">
+                              <div className="h-1 flex-1 overflow-hidden rounded-full bg-card dark:bg-[#3A2417]">
                                 <div
-                                  className="h-full rounded-full bg-[#C65D00] dark:bg-[#FF9F1C]"
+                                  className="h-full rounded-full bg-primary dark:bg-accent"
                                   style={{ width: `${pct}%` }}
                                 />
                               </div>
-                              <span className="text-[10px] font-medium text-[#79695E] dark:text-[#C9B89F]">
+                              <span className="text-[10px] font-medium text-muted-foreground dark:text-[#C9B89F]">
                                 {pct}% match
                               </span>
                             </div>
@@ -622,7 +622,7 @@ export function ApplicationDetailDrawer({
                 {/* Form requirements */}
                 {formReqs.length > 0 && (
                   <div>
-                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#C65D00] dark:text-[#FF9F1C]">
+                    <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary dark:text-[#FF9F1C]">
                       <Icon name="checklist" size={12} />
                       Form fields required by {platformName ?? "this platform"}
                     </h3>
@@ -630,13 +630,13 @@ export function ApplicationDetailDrawer({
                       {formReqs.map((req) => (
                         <div
                           key={req.id}
-                          className="rounded-md border border-[#CFC5BE] bg-[#FFE4B5] p-2.5 dark:border-[#5A3D26] dark:bg-[#4A2F1A]"
+                          className="rounded-md border border-border bg-background p-2.5 dark:border-[#5A3D26] dark:bg-[#4A2F1A]"
                         >
                           <div className="flex items-center gap-2">
                             <span className="flex h-5 w-16 shrink-0 items-center justify-center rounded bg-[#8B4513]/10 text-[10px] font-medium uppercase text-[#8B4513] dark:bg-[#D2691E]/15 dark:text-[#D2691E]">
                               {FIELD_TYPE_LABEL[req.fieldType] ?? req.fieldType}
                             </span>
-                            <p className="min-w-0 flex-1 truncate text-xs font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+                            <p className="min-w-0 flex-1 truncate text-xs font-medium text-foreground dark:text-primary-foreground">
                               {req.fieldLabel || req.fieldKey}
                               {req.isRequired && (
                                 <span className="ml-0.5 text-[#B23A1E]">*</span>
@@ -648,7 +648,7 @@ export function ApplicationDetailDrawer({
                               {req.options.map((opt, i) => (
                                 <span
                                   key={i}
-                                  className="inline-flex items-center rounded border border-[#CFC5BE] bg-[#FFF4DC] px-1.5 py-0.5 text-[10px] text-[#79695E] dark:border-[#5A3D26] dark:bg-[#3A2417] dark:text-[#C9B89F]"
+                                  className="inline-flex items-center rounded border border-border bg-card px-1.5 py-0.5 text-[10px] text-muted-foreground dark:border-[#5A3D26] dark:bg-[#3A2417] dark:text-[#C9B89F]"
                                 >
                                   {opt}
                                 </span>
@@ -656,12 +656,12 @@ export function ApplicationDetailDrawer({
                             </div>
                           )}
                           {req.placeholder && (
-                            <p className="mt-1 text-[10px] italic text-[#79695E] dark:text-[#C9B89F]">
+                            <p className="mt-1 text-[10px] italic text-muted-foreground dark:text-[#C9B89F]">
                               placeholder: {truncate(req.placeholder, 80)}
                             </p>
                           )}
                           {req.detectionSelector && (
-                            <pre className="mt-1.5 overflow-x-auto rounded bg-[#FFF4DC] p-1.5 font-mono text-[10px] leading-relaxed text-[#79695E] dark:bg-[#3A2417] dark:text-[#C9B89F]">
+                            <pre className="mt-1.5 overflow-x-auto rounded bg-card p-1.5 font-mono text-[10px] leading-relaxed text-muted-foreground dark:bg-[#3A2417] dark:text-[#C9B89F]">
                               {req.detectionSelector}
                             </pre>
                           )}
@@ -673,21 +673,21 @@ export function ApplicationDetailDrawer({
 
                 {/* Account credential */}
                 <div>
-                  <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#C65D00] dark:text-[#FF9F1C]">
+                  <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary dark:text-[#FF9F1C]">
                     <Icon name="key" size={12} />
                     Account used
                   </h3>
                   {credential ? (
-                    <div className="rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-3 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
+                    <div className="rounded-lg border border-border bg-background p-3 dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
                       <div className="flex items-center gap-2">
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#C65D00]/10 text-[#C65D00] dark:bg-[#FF9F1C]/15 dark:text-[#FF9F1C]">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary dark:bg-accent/15 dark:text-[#FF9F1C]">
                           <Icon name="mail" size={14} />
                         </span>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-xs font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+                          <p className="truncate text-xs font-medium text-foreground dark:text-primary-foreground">
                             {credential.email}
                           </p>
-                          <p className="text-[10px] text-[#79695E] dark:text-[#C9B89F]">
+                          <p className="text-[10px] text-muted-foreground dark:text-[#C9B89F]">
                             {platformName ?? "this platform"}
                           </p>
                         </div>
@@ -696,10 +696,10 @@ export function ApplicationDetailDrawer({
                             credential.status === "created"
                               ? "border-[#2ea043]/30 bg-[#2ea043]/12 text-[#2ea043]"
                               : credential.status === "creating"
-                              ? "border-[#C65D00]/30 bg-[#C65D00]/10 text-[#C65D00] dark:border-[#FF9F1C]/40 dark:bg-[#FF9F1C]/15 dark:text-[#FF9F1C]"
+                              ? "border-[#C65D00]/30 bg-primary/10 text-primary dark:border-[#FF9F1C]/40 dark:bg-accent/15 dark:text-[#FF9F1C]"
                               : credential.status === "blocked"
                               ? "border-[#B23A1E]/30 bg-[#B23A1E]/10 text-[#B23A1E]"
-                              : "border-[#79695E]/30 bg-[#79695E]/10 text-[#79695E] dark:border-[#C9B89F]/40 dark:bg-[#C9B89F]/15 dark:text-[#C9B89F]"
+                              : "border-[#79695E]/30 bg-[#79695E]/10 text-muted-foreground dark:border-[#C9B89F]/40 dark:bg-[#C9B89F]/15 dark:text-[#C9B89F]"
                           }`}
                         >
                           {credential.status === "created" && <Icon name="check" size={9} className="mr-0.5" />}
@@ -710,11 +710,11 @@ export function ApplicationDetailDrawer({
                       </div>
                     </div>
                   ) : (
-                    <div className="rounded-lg border border-dashed border-[#CFC5BE] bg-[#FFE4B5]/60 p-3 dark:border-[#5A3D26] dark:bg-[#4A2F1A]/60">
-                      <p className="text-xs font-medium text-[#79695E] dark:text-[#C9B89F]">
+                    <div className="rounded-lg border border-dashed border-border bg-background/60 p-3 dark:border-[#5A3D26] dark:bg-[#4A2F1A]/60">
+                      <p className="text-xs font-medium text-muted-foreground dark:text-[#C9B89F]">
                         No account created yet for {platformName ?? "this platform"}
                       </p>
-                      <p className="mt-0.5 text-[10px] text-[#79695E] dark:text-[#C9B89F]">
+                      <p className="mt-0.5 text-[10px] text-muted-foreground dark:text-[#C9B89F]">
                         Aply will create one when you approve this application.
                       </p>
                     </div>
@@ -726,23 +726,23 @@ export function ApplicationDetailDrawer({
                 {/* Timestamps */}
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <p className="text-[#79695E] dark:text-[#C9B89F]">Created</p>
-                    <p className="font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+                    <p className="text-muted-foreground dark:text-[#C9B89F]">Created</p>
+                    <p className="font-medium text-foreground dark:text-primary-foreground">
                       {relativeTime(app.createdAt)}
                     </p>
                   </div>
                   {app.submittedAt && (
                     <div>
-                      <p className="text-[#79695E] dark:text-[#C9B89F]">Submitted</p>
-                      <p className="font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+                      <p className="text-muted-foreground dark:text-[#C9B89F]">Submitted</p>
+                      <p className="font-medium text-foreground dark:text-primary-foreground">
                         {relativeTime(app.submittedAt)}
                       </p>
                     </div>
                   )}
                   {app.approvalChannel && (
                     <div>
-                      <p className="text-[#79695E] dark:text-[#C9B89F]">Approved via</p>
-                      <p className="font-medium capitalize text-[#4A2F1A] dark:text-[#FFE4B5]">
+                      <p className="text-muted-foreground dark:text-[#C9B89F]">Approved via</p>
+                      <p className="font-medium capitalize text-foreground dark:text-primary-foreground">
                         {app.approvalChannel}
                       </p>
                     </div>
@@ -755,7 +755,7 @@ export function ApplicationDetailDrawer({
                     <Button
                       onClick={handleApprove}
                       disabled={busy !== null}
-                      className="flex-1 bg-[#C65D00] text-[#FFE4B5] hover:bg-[#FF9F1C] hover:text-[#4A2F1A]"
+                      className="flex-1 bg-primary text-primary-foreground hover:bg-accent hover:text-foreground"
                     >
                       {busy === "approve" ? (
                         <Icon name="sync" size={14} className="animate-spin" />
@@ -767,7 +767,7 @@ export function ApplicationDetailDrawer({
                     <Button
                       variant="outline"
                       asChild
-                      className="border-[#CFC5BE] text-[#4A2F1A] hover:bg-[#FFE4B5] dark:border-[#5A3D26] dark:text-[#FFE4B5]"
+                      className="border-border text-foreground hover:bg-background dark:border-[#5A3D26] dark:text-primary-foreground"
                     >
                       <a href={job.url} target="_blank" rel="noopener noreferrer">
                         <Icon name="link-external" size={14} />

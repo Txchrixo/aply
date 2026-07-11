@@ -108,14 +108,14 @@ export function PlatformDetailDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full overflow-y-auto border-[#CFC5BE] bg-[#FFF4DC] p-0 sm:max-w-lg dark:border-[#5A3D26] dark:bg-[#3A2417]"
+        className="w-full overflow-y-auto border-border bg-card p-0 sm:max-w-lg dark:border-[#5A3D26] dark:bg-[#3A2417]"
         aria-describedby={undefined}
       >
-        <SheetHeader className="border-b border-[#CFC5BE] px-6 py-4 dark:border-[#5A3D26]">
-          <SheetTitle className="font-heading text-xl font-semibold text-[#4A2F1A] dark:text-[#FFE4B5]">
+        <SheetHeader className="border-b border-border px-6 py-4 dark:border-[#5A3D26]">
+          <SheetTitle className="font-heading text-xl font-semibold text-foreground dark:text-primary-foreground">
             {loading ? "Loading…" : p ? p.name : "Platform not found"}
           </SheetTitle>
-          <SheetDescription className="text-sm text-[#79695E] dark:text-[#C9B89F]">
+          <SheetDescription className="text-sm text-muted-foreground dark:text-[#C9B89F]">
             {loading
               ? "Fetching platform details"
               : p
@@ -126,12 +126,12 @@ export function PlatformDetailDrawer({
 
         {loading ? (
           <div className="flex h-full items-center justify-center p-8">
-            <Icon name="sync" size={24} className="animate-spin text-[#C65D00]" />
+            <Icon name="sync" size={24} className="animate-spin text-primary" />
           </div>
         ) : !p || !s ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
-            <Icon name="globe" size={32} className="text-[#79695E]" />
-            <p className="text-sm text-[#79695E]">Platform not found.</p>
+            <Icon name="globe" size={32} className="text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">Platform not found.</p>
           </div>
         ) : (
           <ScrollArea className="h-[calc(100vh-8rem)]">
@@ -139,12 +139,12 @@ export function PlatformDetailDrawer({
               {/* Meta */}
               <div className="flex flex-wrap items-center gap-2">
                 <CategoryBadge category={p.category} />
-                <span className="flex items-center gap-1 text-xs text-[#79695E] dark:text-[#C9B89F]">
+                <span className="flex items-center gap-1 text-xs text-muted-foreground dark:text-[#C9B89F]">
                   <PriorityDot priority={p.priority} />
                   {p.priority} priority
                 </span>
                 {p.hasLoginRequired && (
-                  <span className="inline-flex items-center gap-1 rounded border border-[#CFC5BE] bg-[#FFE4B5] px-1.5 py-0.5 text-[10px] font-medium text-[#79695E] dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
+                  <span className="inline-flex items-center gap-1 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
                     <Icon name="shield-lock" size={10} />
                     {t("platforms.login")}
                   </span>
@@ -156,7 +156,7 @@ export function PlatformDetailDrawer({
                   </span>
                 )}
                 {hasRssFeed(p.name) && (
-                  <span className="inline-flex items-center gap-1 rounded border border-[#FF9F1C]/40 bg-[#FF9F1C]/15 px-1.5 py-0.5 text-[10px] font-medium text-[#C65D00] dark:border-[#FF9F1C]/50 dark:text-[#FF9F1C]">
+                  <span className="inline-flex items-center gap-1 rounded border border-[#FF9F1C]/40 bg-accent/15 px-1.5 py-0.5 text-[10px] font-medium text-primary dark:border-[#FF9F1C]/50 dark:text-[#FF9F1C]">
                     <Icon name="rss" size={10} />
                     RSS
                   </span>
@@ -166,7 +166,7 @@ export function PlatformDetailDrawer({
                     "inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium",
                     p.enabled
                       ? "bg-[#2ea043]/12 text-[#2ea043]"
-                      : "bg-[#79695E]/12 text-[#79695E]"
+                      : "bg-[#79695E]/12 text-muted-foreground"
                   )}
                 >
                   <span className="h-1.5 w-1.5 rounded-full bg-current" />
@@ -185,7 +185,7 @@ export function PlatformDetailDrawer({
               </div>
 
               {p.notes && (
-                <div className="rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-3 text-xs text-[#79695E] dark:border-[#5A3D26] dark:bg-[#4A2F1A] dark:text-[#C9B89F]">
+                <div className="rounded-lg border border-border bg-background p-3 text-xs text-muted-foreground dark:border-[#5A3D26] dark:bg-[#4A2F1A] dark:text-[#C9B89F]">
                   <Icon name="info" size={12} className="mr-1 inline" />
                   {p.notes}
                 </div>
@@ -195,7 +195,7 @@ export function PlatformDetailDrawer({
 
               {/* Stats grid */}
               <div>
-                <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#C65D00]">
+                <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
                   <Icon name="graph" size={12} />
                   {t("platformDrawer.stats")}
                 </h3>
@@ -244,14 +244,14 @@ export function PlatformDetailDrawer({
 
               {/* Recent offers */}
               <div>
-                <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#C65D00]">
+                <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
                   <Icon name="list-unordered" size={12} />
                   {t("platformDrawer.recentOffers")}
                 </h3>
                 {data?.recentOffers.length === 0 ? (
-                  <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-[#CFC5BE] py-8 text-center dark:border-[#5A3D26]">
-                    <Icon name="search" size={20} className="text-[#79695E]" />
-                    <p className="text-xs text-[#79695E] dark:text-[#C9B89F]">
+                  <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border py-8 text-center dark:border-[#5A3D26]">
+                    <Icon name="search" size={20} className="text-muted-foreground" />
+                    <p className="text-xs text-muted-foreground dark:text-[#C9B89F]">
                       {t("platformDrawer.noOffers")}
                     </p>
                   </div>
@@ -260,10 +260,10 @@ export function PlatformDetailDrawer({
                     {data?.recentOffers.map((offer) => (
                       <li
                         key={offer.id}
-                        className="flex items-start gap-3 rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-3 transition-colors hover:border-[#C65D00] dark:border-[#5A3D26] dark:bg-[#4A2F1A]"
+                        className="flex items-start gap-3 rounded-lg border border-border bg-background p-3 transition-colors hover:border-[#C65D00] dark:border-[#5A3D26] dark:bg-[#4A2F1A]"
                       >
                         <span
-                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[10px] font-semibold text-[#FFE4B5]"
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[10px] font-semibold text-primary-foreground"
                           style={{
                             backgroundColor: logoColor(
                               offer.company ?? offer.title
@@ -274,10 +274,10 @@ export function PlatformDetailDrawer({
                           {initials(offer.company ?? offer.title)}
                         </span>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+                          <p className="truncate text-sm font-medium text-foreground dark:text-primary-foreground">
                             {offer.title}
                           </p>
-                          <p className="truncate text-xs text-[#79695E] dark:text-[#C9B89F]">
+                          <p className="truncate text-xs text-muted-foreground dark:text-[#C9B89F]">
                             {offer.company ?? "-"}
                             {offer.location ? ` · ${offer.location}` : ""}
                             {offer.salary ? ` · ${offer.salary}` : ""}
@@ -299,7 +299,7 @@ export function PlatformDetailDrawer({
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label="Open offer"
-                          className="rounded-md p-1.5 text-[#79695E] transition-colors hover:bg-[#FFF4DC] hover:text-[#C65D00] dark:hover:bg-[#3A2417]"
+                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-card hover:text-primary dark:hover:bg-[#3A2417]"
                         >
                           <Icon name="link-external" size={14} />
                         </a>
@@ -314,7 +314,7 @@ export function PlatformDetailDrawer({
                 href={p.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-lg border border-[#C65D00] bg-[#C65D00] px-4 py-2.5 text-sm font-medium text-[#FFE4B5] transition-colors hover:bg-[#FF9F1C] hover:text-[#4A2F1A]"
+                className="flex items-center justify-center gap-2 rounded-lg border border-[#C65D00] bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
                 <Icon name="link-external" size={14} />
                 {t("platformDrawer.visit")}
@@ -341,7 +341,7 @@ function StatBox({
   isText?: boolean;
 }) {
   return (
-    <div className="rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] p-3 text-center dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
+    <div className="rounded-lg border border-border bg-background p-3 text-center dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
       <span
         className="mx-auto mb-1.5 flex h-7 w-7 items-center justify-center rounded-md"
         style={{ backgroundColor: `${color}20`, color }}
@@ -350,13 +350,13 @@ function StatBox({
       </span>
       <p
         className={cn(
-          "font-heading font-semibold text-[#4A2F1A] dark:text-[#FFE4B5]",
+          "font-heading font-semibold text-foreground dark:text-primary-foreground",
           isText ? "text-xs" : "text-xl"
         )}
       >
         {value}
       </p>
-      <p className="text-[10px] font-medium uppercase tracking-wider text-[#79695E] dark:text-[#C9B89F]">
+      <p className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground dark:text-[#C9B89F]">
         {label}
       </p>
     </div>
