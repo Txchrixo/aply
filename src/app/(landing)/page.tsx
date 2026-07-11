@@ -2,11 +2,9 @@
 /**
  * Landing page for Aply.
  *
- * Features:
- * - Animated nav with burger toggle + staggered text reveal (GSAP)
- * - Interactive dot-grid background (mouse-reactive, click shockwave)
- * - Scroll-following SVG path that snakes through sections
- * - Real interactive dashboard preview in hero
+ * Hero with:
+ * - Floating rounded nav (transparent on scroll)
+ * - Real dashboard preview (interactive, not a simplified mock)
  * - Background image behind the browser window
  * - "View live demo" button
  */
@@ -14,9 +12,6 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { Icon } from "@/components/aply/icon";
-import { DotGrid } from "@/components/aply/dot-grid";
-import { AnimatedNav } from "@/components/aply/animated-nav";
-import { ScrollPath } from "@/components/aply/scroll-path";
 
 const FEATURES = [
   { icon: "pulse", title: "24/7 monitoring", desc: "190+ job boards watched around the clock. New offers detected and imported automatically." },
@@ -48,35 +43,51 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Animated nav with burger + staggered text reveal */}
-      <AnimatedNav />
-
-      {/* Scroll-following SVG path (desktop only, behind content) */}
-      <ScrollPath />
+      {/* Floating nav */}
+      <motion.nav
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="fixed left-1/2 top-3 z-50 -translate-x-1/2 px-4"
+        style={{ width: "min(100% - 1.5rem, 900px)" }}
+      >
+        <div
+          className={`flex items-center justify-between rounded-full px-4 py-2 transition-all duration-300 sm:px-6 ${
+            scrolled
+              ? "bg-card/70 shadow-lg ring-1 ring-border/20 backdrop-blur-xl"
+              : "bg-card/20 backdrop-blur-sm"
+          }`}
+        >
+          <Link href="/" className="flex items-center gap-2">
+            <Icon name="rocket" size={20} className="text-primary" />
+            <span className="font-heading text-base font-semibold">Aply</span>
+          </Link>
+          <div className="hidden items-center gap-1 sm:flex">
+            <a href="#features" className="rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">Features</a>
+            <a href="#how" className="rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">How it works</a>
+            <a href="#extension" className="rounded-full px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground">Extension</a>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard" className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              Demo
+            </Link>
+            <Link href="/signup" className="rounded-full bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-accent">
+              Get started
+            </Link>
+          </div>
+        </div>
+      </motion.nav>
 
       {/* Hero */}
-      <section className="relative overflow-hidden px-4 pt-24 pb-8 sm:px-6 sm:pt-28">
-        {/* Interactive dot-grid background (only behind hero) */}
-        <DotGrid
-          dotSize={4}
-          gap={20}
-          baseColor="#E5D5B5"
-          activeColor="#C65D00"
-          proximity={120}
-          speedTrigger={80}
-          shockRadius={200}
-          shockStrength={4}
-          className="opacity-40"
-        />
-
+      <section className="relative overflow-hidden px-4 pt-32 pb-8 sm:px-6 sm:pt-36">
         {/* Background image behind hero */}
-        <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="pointer-events-none absolute inset-0 -z-20">
           <img
             src="/landing-bg.jpg"
             alt=""
-            className="h-full w-full object-cover opacity-15"
+            className="h-full w-full object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/60 to-background" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background" />
         </div>
 
         <motion.div style={{ y: heroY, opacity: heroOpacity }} className="mx-auto max-w-4xl text-center">
