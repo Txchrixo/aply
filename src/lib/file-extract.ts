@@ -71,12 +71,87 @@ async function extractPdfText(file: File): Promise<string> {
     .trim();
 
   if (!result) {
-    throw new Error(
-      "Could not extract text from PDF. It may be image-based or encrypted. Try copy-pasting your resume text instead."
-    );
+    // PDF is likely image-based (scanned). Use VLM to extract text via vision.
+    return await extractPdfTextViaVLM(file);
   }
 
   return result;
+}
+
+/**
+ * Fallback for image-based PDFs: convert to images and use VLM (vision model)
+ * to read the text. This handles scanned resumes that have no text layer.
+ *
+ * Uses the z-ai-web-dev-sdk's vision API (server-side only).
+ * Must be called from a server context (API route).
+ */
+async function extractPdfTextViaVLM(file: File): Promise<string> {
+  try {
+    // Convert PDF to base64 (chunked to avoid call stack overflow on large files)
+    const buffer = await file.arrayBuffer();
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    const chunkSize = 8192;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+      binary += String.fromCharCode.apply(null, Array.from(chunk) as unknown as number[]);
+    }
+    const base64 = btoa(binary);
+
+    // Use VLM to read the resume
+    const ZAI = (await import("z-ai-web-dev-sdk")).default;
+    let client: InstanceType<typeof ZAI>;
+
+    const apiKey = process.env.ZAI_API_KEY;
+    if (apiKey) {
+      client = new ZAI({
+        baseUrl: process.env.ZAI_BASE_URL ?? "https://api.z.ai/api/paas/v4",
+        apiKey,
+      });
+    } else {
+      // @ts-expect-error - create() is static
+      client = await ZAI.create();
+    }
+
+    const completion = await client.chat.completions.createVision({
+      model: "glm-4.5v",
+      messages: [
+        {
+          role: "system",
+          content: "You are a resume parser. Extract ALL text from the resume image exactly as written. Output ONLY the plain text, preserving the structure (headings, bullet points, dates). Do not summarize or modify anything.",
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Extract all text from this resume PDF. Output the full text content only.",
+            },
+            {
+              type: "file_url",
+              file_url: {
+                url: `data:application/pdf;base64,${base64}`,
+              },
+            },
+          ],
+        },
+      ],
+      thinking: { type: "disabled" },
+    });
+
+    const text = completion?.choices?.[0]?.message?.content?.trim() ?? "";
+    if (!text || text.length < 10) {
+      throw new Error("VLM could not extract text from this PDF. Try copy-pasting your resume text.");
+    }
+    return text;
+  } catch (err) {
+    console.error("[extractPdfTextViaVLM] error:", err);
+    throw new Error(
+      "Could not extract text from this PDF (it may be image-based). " +
+      (err instanceof Error ? err.message : "Unknown error") +
+      ". Try copy-pasting your resume text instead."
+    );
+  }
 }
 
 /**
