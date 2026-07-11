@@ -12,15 +12,16 @@ import { createLLMProvider } from "./llm/types";
 import type { Language, CoverLetterInput, CoverLetterResult, FormQuestion, FormAnswer, JobExtraction } from "./llm/types";
 
 // Singleton provider instance
-let _provider: ReturnType<typeof createLLMProvider> | null = null;
+let _providerPromise: Promise<ReturnType<typeof createLLMProvider>> | null = null;
 function getProvider() {
-  if (!_provider) _provider = createLLMProvider();
-  return _provider;
+  if (!_providerPromise) _providerPromise = createLLMProvider();
+  return _providerPromise;
 }
 
 // Backward-compatible exports
 export async function generateCoverLetter(input: CoverLetterInput): Promise<CoverLetterResult> {
-  return getProvider().generateCoverLetter(input);
+  const provider = await getProvider();
+  return provider.generateCoverLetter(input);
 }
 
 export async function answerFormQuestions(args: {
@@ -31,15 +32,18 @@ export async function answerFormQuestions(args: {
   jobDescription: string;
   language: Language;
 }): Promise<FormAnswer[]> {
-  return getProvider().answerFormQuestions(args);
+  const provider = await getProvider();
+  return provider.answerFormQuestions(args);
 }
 
 export async function extractJobFields(rawHtml: string): Promise<JobExtraction> {
-  return getProvider().extractJobFields(rawHtml);
+  const provider = await getProvider();
+  return provider.extractJobFields(rawHtml);
 }
 
 export async function detectLanguage(text: string): Promise<Language> {
-  return getProvider().detectLanguage(text);
+  const provider = await getProvider();
+  return provider.detectLanguage(text);
 }
 
 export function extractSkillsFromResume(resumeText: string): string[] {
