@@ -1,7 +1,8 @@
 "use client";
 /**
- * AplyHeader · sticky top bar with logo, anchor nav, monitoring pill,
- * language switcher, activity bell, and CTA.
+ * AplyHeader - sticky top bar.
+ * Desktop: logo + nav links + controls (language, search, activity, theme, CTA)
+ * Mobile: logo + compact controls (CTA only, nav is in MobileNav bottom bar)
  */
 import { Icon } from "@/components/aply/icon";
 import { useI18n } from "@/components/aply/i18n";
@@ -34,53 +35,49 @@ export function AplyHeader({ monitoringEnabled, children }: AplyHeaderProps) {
   const { t } = useI18n();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#CFC5BE] bg-[#FFF4DC]/95 backdrop-blur supports-[backdrop-filter]:bg-[#FFF4DC]/80">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4 md:px-6">
+    <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 safe-top">
+      <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-3 px-3 sm:h-16 sm:px-4 md:gap-4 md:px-6">
         {/* Brand */}
-        <a href="#top" className="flex items-center gap-2.5" aria-label="Aply home">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#CFC5BE] bg-[#FFE4B5] shadow-sm">
-            <Icon name="rocket" size={20} className="text-[#C65D00]" />
+        <a href="#top" className="flex items-center gap-2 sm:gap-2.5" aria-label="Aply home">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-background shadow-sm sm:h-10 sm:w-10">
+            <Icon name="rocket" size={18} className="text-primary sm:size-5" />
           </span>
           <span className="flex flex-col leading-none">
-            <span className="font-heading text-xl font-semibold text-[#4A2F1A]">
+            <span className="font-heading text-lg font-semibold text-foreground sm:text-xl">
               Aply
             </span>
-            <span className="text-[11px] text-[#79695E]">
+            <span className="hidden text-[11px] text-muted-foreground sm:inline">
               {t("header.tagline")}
             </span>
           </span>
         </a>
 
-        {/* Center nav (desktop) */}
+        {/* Center nav (desktop only, lg+) */}
         <nav
           aria-label="Sections"
-          className="mx-auto hidden items-center gap-1 lg:flex"
+          className="mx-auto hidden items-center gap-0.5 lg:flex"
         >
           {NAV.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="rounded-md px-3 py-1.5 text-sm text-[#79695E] transition-colors hover:bg-[#FFE4B5] hover:text-[#C65D00]"
+              className="rounded-md px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
             >
               {t(l.labelKey)}
             </a>
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2 lg:ml-0">
-          {/* Monitoring pill */}
+        {/* Right cluster */}
+        <div className="ml-auto flex items-center gap-1.5 sm:gap-2 lg:ml-0">
+          {/* Monitoring pill - hidden on mobile */}
           <span
             className={cn(
-              "hidden items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium sm:inline-flex",
+              "hidden items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium sm:inline-flex",
               monitoringEnabled
-                ? "border-[#2ea043]/30 bg-[#2ea043]/10 text-[#2ea043]"
-                : "border-[#CFC5BE] bg-[#FFE4B5] text-[#79695E]"
+                ? "bg-[#2ea043]/10 text-[#2ea043]"
+                : "bg-muted text-muted-foreground"
             )}
-            title={
-              monitoringEnabled
-                ? "Aply is scanning job boards"
-                : "Monitoring is paused"
-            }
           >
             <span className="relative flex h-2 w-2">
               {monitoringEnabled && (
@@ -89,25 +86,28 @@ export function AplyHeader({ monitoringEnabled, children }: AplyHeaderProps) {
               <span
                 className={cn(
                   "relative inline-flex h-2 w-2 rounded-full",
-                  monitoringEnabled ? "bg-[#2ea043]" : "bg-[#79695E]"
+                  monitoringEnabled ? "bg-[#2ea043]" : "bg-muted-foreground"
                 )}
               />
             </span>
             {monitoringEnabled ? "Active" : "Paused"}
           </span>
 
-          <LanguageSwitcher />
-          {children}
-          <ActivityPopover />
-          <ThemeToggle />
+          {/* Controls - hidden on mobile (available via settings on mobile) */}
+          <div className="hidden sm:flex sm:items-center sm:gap-1.5">
+            <LanguageSwitcher />
+            {children}
+            <ActivityPopover />
+            <ThemeToggle />
+          </div>
 
           <a
             href="#extension"
-            className="inline-flex h-9 items-center gap-1.5 rounded-md bg-[#C65D00] px-3 text-sm font-medium text-[#FFE4B5] shadow-sm transition-all hover:bg-[#FF9F1C] hover:text-[#4A2F1A] hover:shadow-md"
+            className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-accent hover:shadow-md"
           >
             <Icon name="rocket" size={14} />
             <span className="hidden sm:inline">{t("header.openInChrome")}</span>
-            <span className="sm:hidden">Chrome</span>
+            <span className="sm:hidden">Get</span>
           </a>
         </div>
       </div>

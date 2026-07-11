@@ -61,7 +61,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${fraunces.variable} ${poppins.variable} antialiased aply-paper min-h-screen flex flex-col`}
+        className={`${fraunces.variable} ${poppins.variable} antialiased aply-paper min-h-screen flex flex-col pb-14 lg:pb-0`}
       >
         <ThemeProvider>
           {children}

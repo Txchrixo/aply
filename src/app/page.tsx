@@ -20,6 +20,7 @@ import { ResumeSection } from "@/components/aply/resume-section";
 import { SettingsSection } from "@/components/aply/settings-section";
 import { ExtensionSection } from "@/components/aply/extension-section";
 import { AplyFooter } from "@/components/aply/footer";
+import { MobileNav } from "@/components/aply/mobile-nav";
 import { CommandPalette } from "@/components/aply/command-palette";
 import { KeyboardShortcutsHelp } from "@/components/aply/keyboard-shortcuts-help";
 import { OnboardingBanner } from "@/components/aply/onboarding-banner";
@@ -175,6 +176,7 @@ export default function Home() {
         </main>
         <AplyFooter />
       </div>
+      <MobileNav />
       <KeyboardShortcutsHelp onScan={handleCommandScan} />
     </I18nProvider>
   );

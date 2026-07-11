@@ -55,3 +55,18 @@ server.log
 *.log
 dev.log
 server.log
+# Skills directory (not part of the app)
+skills/
+
+# Database
+*.db
+db/
+
+# Research
+research/
+
+# Tool results
+tool-results/
+
+# Logs
+*.log
