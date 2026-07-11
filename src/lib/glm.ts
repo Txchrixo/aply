@@ -299,3 +299,158 @@ export async function detectLanguage(text: string): Promise<Language> {
     return "en";
   }
 }
+
+export interface FormQuestion {
+  fieldKey: string;
+  fieldLabel: string;
+  fieldType: string;
+  isRequired: boolean;
+  options?: string[] | null;
+  placeholder?: string | null;
+}
+
+export interface FormAnswer {
+  fieldKey: string;
+  fieldLabel: string;
+  answer: string;
+}
+
+/**
+ * Answer custom form questions using GLM + the user's resume.
+ *
+ * This handles the variation problem: different job boards ask for different
+ * info (education history, professional experience entries, "why this job",
+ * salary expectations, work authorization, etc.). GLM reads the resume and
+ * generates authentic, specific answers for each question.
+ *
+ * For select fields with options, GLM picks the best matching option.
+ * For text/textarea fields, GLM generates a full answer grounded in the resume.
+ */
+export async function answerFormQuestions(args: {
+  questions: FormQuestion[];
+  resumeText: string;
+  jobTitle: string;
+  company?: string;
+  jobDescription: string;
+  language: Language;
+}): Promise<FormAnswer[]> {
+  const { questions, resumeText, jobTitle, company, jobDescription, language } = args;
+  if (questions.length === 0) return [];
+
+  const client = await getClientAsync();
+
+  const questionsJson = JSON.stringify(
+    questions.map((q) => ({
+      key: q.fieldKey,
+      label: q.fieldLabel,
+      type: q.fieldType,
+      required: q.isRequired,
+      options: q.options ?? undefined,
+    }))
+  );
+
+  const systemPrompt = `You are Aply's form-filling assistant. You answer job application questions on behalf of the candidate.
+
+RULES:
+1. Answer in ${LANG_NAME[language]}.
+2. ONLY use facts from the candidate's resume. Never invent employers, dates, degrees, or metrics.
+3. For "select" fields with options, respond with EXACTLY one of the provided options (the best match).
+4. For "text" fields, give a concise answer (1-3 sentences max).
+5. For "textarea" fields, give a fuller answer (3-6 sentences) but stay grounded in the resume.
+6. For "tel" / "email" / "date" fields, give a simple value.
+7. For questions like "Why are you interested?", reference something specific from the job description.
+8. For salary questions, say "negotiable" or give a range based on the role seniority if the resume hints at it.
+9. NEVER say "as an AI" or "I cannot" · always answer as the candidate.
+
+Respond with ONLY a JSON array. Each element: {"key": "<fieldKey>", "answer": "<your answer>"}. No markdown, no explanation.`;
+
+  const userPrompt = `# JOB
+Title: ${jobTitle}
+Company: ${company ?? "N/A"}
+Description: ${jobDescription.slice(0, 1000)}
+
+# CANDIDATE RESUME
+${resumeText.slice(0, 3000)}
+
+# QUESTIONS TO ANSWER
+${questionsJson}
+
+# TASK
+Answer each question. JSON array only.`;
+
+  try {
+    const completion = await client.chat.completions.create({
+      model: "glm-4.6",
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt },
+      ],
+      temperature: 0.6,
+      thinking: { type: "disabled" },
+    });
+
+    const raw = completion?.choices?.[0]?.message?.content?.trim() ?? "[]";
+    // Strip markdown code fences if present
+    const clean = raw.replace(/^```json?\n?/, "").replace(/\n?```$/, "");
+    const parsed = JSON.parse(clean) as Array<{ key: string; answer: string }>;
+
+    return parsed.map((p) => ({
+      fieldKey: p.key,
+      fieldLabel: questions.find((q) => q.fieldKey === p.key)?.fieldLabel ?? p.key,
+      answer: p.answer,
+    }));
+  } catch (err) {
+    console.error("[answerFormQuestions] GLM error:", err);
+    // Fallback: return empty answers for required fields
+    return questions.map((q) => ({
+      fieldKey: q.fieldKey,
+      fieldLabel: q.fieldLabel,
+      answer: "",
+    }));
+  }
+}
+
+/**
+ * Detect if two job offers are the same job (cross-reference detection).
+ * Compares title similarity + company name + location.
+ * Returns a confidence score 0-1.
+ */
+export function detectCrossReference(
+  offerA: { title: string; company?: string | null; location?: string | null },
+  offerB: { title: string; company?: string | null; location?: string | null }
+): number {
+  const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+
+  const titleA = normalize(offerA.title);
+  const titleB = normalize(offerB.title);
+  const companyA = normalize(offerA.company ?? "");
+  const companyB = normalize(offerB.company ?? "");
+
+  // Title similarity (word overlap)
+  const wordsA = new Set(titleA.split(" "));
+  const wordsB = new Set(titleB.split(" "));
+  const intersection = new Set([...wordsA].filter((w) => wordsB.has(w) && w.length > 2));
+  const union = new Set([...wordsA, ...wordsB]);
+  const titleScore = union.size > 0 ? intersection.size / union.size : 0;
+
+  // Company match (exact or contains)
+  let companyScore = 0;
+  if (companyA && companyB) {
+    if (companyA === companyB) companyScore = 1;
+    else if (companyA.includes(companyB) || companyB.includes(companyA)) companyScore = 0.8;
+    else companyScore = 0;
+  }
+
+  // Location match
+  const locA = normalize(offerA.location ?? "");
+  const locB = normalize(offerB.location ?? "");
+  let locationScore = 0;
+  if (locA && locB) {
+    if (locA === locB) locationScore = 1;
+    else if (locA.includes(locB) || locB.includes(locA)) locationScore = 0.7;
+  }
+
+  // Weighted score: company is most important, then title, then location
+  const score = companyScore * 0.5 + titleScore * 0.35 + locationScore * 0.15;
+  return Math.round(score * 100) / 100;
+}
