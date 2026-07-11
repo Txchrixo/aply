@@ -861,3 +861,36 @@ Next phases:
 - Phase 3: UI redesign (refined, less bordered cards, true mobile/tablet responsive)
 - Phase 4: Extension improvements (form detection + field mapping + install link)
 - Phase 5: Career page monitoring + account creation flow
+
+---
+Task ID: REFACTOR-COMPLETE
+Agent: main
+Task: Full refactor - em dashes removal, data model extension, UI redesign, ATS integration, extension improvements, git setup
+
+Work Log:
+- Phase 1: Removed ALL em dashes (38+ files). Extended Prisma schema with Company, CompanyCareerPage, OfferCrossReference, FormFieldRequirement, AccountCredential models. Updated seed with 5 companies, 22 form field requirements, 4 credentials, cross-references.
+- Phase 2: Updated application detail drawer to show company info, cross-references, form requirements, credentials, import status, application source. Updated monitoring section with import progress. Updated settings with account emails + prefer career page.
+- Phase 3: UI redesign - mobile bottom navigation, reusable pagination component, refined base styles (softer borders, safe-area support), compact header for mobile, refined hero (stat strip instead of bordered cards, horizontal flow for how-it-works), cleaner section headings.
+- Phase 4: Created ATS API integration (src/lib/ats.ts) - fetches real jobs from Greenhouse and Lever public APIs (free, no auth). Created /api/ats/jobs endpoint. These APIs even support application submission.
+- Phase 5: Improved Chrome extension content.js - smart field detection (label/name/id/placeholder/aria), ATS detection (Greenhouse/Lever/Workday/Ashby/SmartRecruiters), field classification (full_name/email/phone/cover_letter/resume/salary etc.), ATS-specific selector fallbacks, proper event triggering for React/Vue. Updated popup with fill form button.
+- Phase 6: Created /api/extension/download endpoint - returns extension as ZIP (no external deps, custom ZIP builder with zlib). Users can download and load as unpacked extension.
+- Anti-bot research: Compiled comprehensive report (docs/ANTI_BOT_RESEARCH_REPORT.md) covering puppeteer-stealth, rebrowser-playwright, patchright, FlareSolverr, cloudscraper, ghost-cursor, human-typing, CapSolver, 2Captcha, residential proxies, legal landscape (hiQ v LinkedIn), RSS feeds, ATS public APIs.
+- Git: Configured author as Txchrixo. Squashed 13 UUID-named commits into one clean commit. Pushed to https://github.com/Txchrixo/aply.git. All subsequent commits have clear messages, no em dashes.
+- Lint: 0 errors, 0 warnings
+- Verified: page loads clean on desktop + mobile + tablet. Mobile nav works. Extension ZIP downloads correctly (8.6KB, 6 files). ATS API functional.
+
+Stage Summary:
+- Complete data model: companies, career pages, cross-references, form field requirements, account credentials, import pipeline, application source tracking
+- Real job discovery: Greenhouse + Lever public APIs (free, no auth, supports application submission)
+- Chrome extension: smart form detection, ATS-aware, downloadable as ZIP
+- UI: refined hero, mobile bottom nav, reusable pagination, borderless cards (ring instead of border)
+- Research: comprehensive anti-bot bypass report with practical implementation roadmap
+- Git: all code pushed to GitHub with clean commit history
+
+Key findings from research:
+1. Greenhouse + Lever public APIs are the best path (free, no auth, even support application submission)
+2. rebrowser-playwright or patchright-nodejs for browser automation (better than puppeteer-stealth)
+3. FlareSolverr (Docker) for Cloudflare bypass, callable via HTTP from Bun
+4. ghost-cursor + human-typing for human behavior simulation
+5. CapSolver for CAPTCHA solving (paid, ~$0.80/1k, free trial credit)
+6. No truly free CAPTCHA solver or residential proxy exists
