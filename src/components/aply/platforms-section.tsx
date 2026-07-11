@@ -33,6 +33,7 @@ import {
 import { Icon } from "@/components/aply/icon";
 import { SectionHeading } from "@/components/aply/section-heading";
 import { PlatformDetailDrawer } from "@/components/aply/platform-detail-drawer";
+import { Pagination } from "@/components/aply/pagination";
 import { hasRssFeed } from "@/lib/rss-feeds";
 import {
   CategoryBadge,
@@ -76,9 +77,9 @@ function PlatformCard({ platform, onToggle, onClick }: PlatformCardProps) {
   const { t } = useI18n();
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.2 }}
       onClick={() => onClick(platform.id)}
       role="button"
       tabIndex={0}
@@ -89,23 +90,23 @@ function PlatformCard({ platform, onToggle, onClick }: PlatformCardProps) {
         }
       }}
       aria-label={`View details for ${platform.name}`}
-      className="aply-card-hover flex cursor-pointer flex-col gap-3 rounded-lg border border-[#CFC5BE] bg-[#FFF4DC] p-4 dark:bg-[#3A2417]"
+      className="aply-card-hover flex cursor-pointer flex-col gap-2.5 rounded-xl bg-card p-4 ring-1 ring-border/40"
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <PriorityDot priority={platform.priority} />
-          <span className="truncate font-medium text-[#4A2F1A] dark:text-[#FFE4B5]">
+          <span className="truncate text-sm font-medium text-foreground">
             {platform.name}
           </span>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="flex shrink-0 items-center gap-1">
           <a
             href={platform.url}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
             aria-label={t("platforms.aria.openInNewTab").replace("{name}", platform.name)}
-            className="rounded-md p-1.5 text-[#79695E] transition-colors hover:bg-[#FFE4B5] hover:text-[#C65D00] dark:hover:bg-[#4A2F1A]"
+            className="touch-target flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
           >
             <Icon name="link-external" size={14} />
           </a>
@@ -121,20 +122,20 @@ function PlatformCard({ platform, onToggle, onClick }: PlatformCardProps) {
       <div className="flex flex-wrap items-center gap-1.5">
         <CategoryBadge category={platform.category} />
         {platform.hasLoginRequired && (
-          <span className="inline-flex items-center gap-1 rounded border border-[#CFC5BE] bg-[#FFE4B5] px-1.5 py-0.5 text-[10px] font-medium text-[#79695E] dark:border-[#5A3D26] dark:bg-[#4A2F1A]">
+          <span className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
             <Icon name="shield-lock" size={10} />
             {t("platforms.login")}
           </span>
         )}
         {platform.hasAntiBot && (
-          <span className="inline-flex items-center gap-1 rounded border border-[#B23A1E]/30 bg-[#B23A1E]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#B23A1E]">
+          <span className="inline-flex items-center gap-1 rounded bg-[#B23A1E]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#B23A1E]">
             <Icon name="alert" size={10} />
             {t("platforms.antibot")}
           </span>
         )}
         {hasRssFeed(platform.name) && (
           <span
-            className="inline-flex items-center gap-1 rounded border border-[#FF9F1C]/40 bg-[#FF9F1C]/15 px-1.5 py-0.5 text-[10px] font-medium text-[#C65D00] dark:border-[#FF9F1C]/50 dark:text-[#FF9F1C]"
+            className="inline-flex items-center gap-1 rounded bg-[#FF9F1C]/15 px-1.5 py-0.5 text-[10px] font-medium text-primary dark:text-accent"
             title={t("platforms.rssTooltip")}
           >
             <Icon name="rss" size={10} />
@@ -143,31 +144,27 @@ function PlatformCard({ platform, onToggle, onClick }: PlatformCardProps) {
         )}
       </div>
 
-      <a
-        href={platform.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="block truncate text-xs text-[#79695E] hover:text-[#C65D00]"
-        title={platform.url}
-      >
+      <p className="truncate text-xs text-muted-foreground" title={platform.url}>
         {platform.url.replace(/^https?:\/\//, "")}
-      </a>
+      </p>
 
       <div className="flex flex-wrap items-center gap-1">
         {platform.languages.map((l) => (
           <LangBadge key={l} lang={l} />
         ))}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-1">
-        {platform.contractTypes.map((c) => (
+        {platform.contractTypes.slice(0, 3).map((c) => (
           <ContractBadge key={c} type={c} />
         ))}
+        {platform.contractTypes.length > 3 && (
+          <span className="text-[10px] text-muted-foreground">
+            +{platform.contractTypes.length - 3}
+          </span>
+        )}
       </div>
 
       {platform.notes && (
         <p
-          className="line-clamp-1 text-[11px] text-[#79695E]"
+          className="line-clamp-1 text-[11px] text-muted-foreground"
           title={platform.notes}
         >
           {platform.notes}
@@ -487,13 +484,13 @@ export function PlatformsSection() {
           subtitle={`${total} ${t("platforms.subtitleSuffix")}`}
         />
 
-        {/* Filter bar */}
-        <div className="mt-6 flex flex-col gap-3 rounded-xl border border-[#CFC5BE] bg-[#FFF4DC] p-3 md:flex-row md:items-center">
+        {/* Filter bar - stacked on mobile, row on desktop */}
+        <div className="mt-6 flex flex-col gap-2 rounded-xl bg-card p-3 ring-1 ring-border/40 sm:flex-row sm:items-center sm:gap-3">
           <div className="relative flex-1">
             <Icon
               name="search"
               size={14}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[#79695E]"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             />
             <Input
               value={q}
@@ -502,65 +499,62 @@ export function PlatformsSection() {
                 setPage(1);
               }}
               placeholder={t("platforms.search")}
-              className="pl-9 bg-[#FFE4B5]"
+              className="touch-target pl-9"
             />
           </div>
-          <Select
-            value={category}
-            onValueChange={(v) => {
-              setCategory(v);
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-full bg-[#FFE4B5] md:w-48">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {CATEGORY_VALUES.map((c) => (
-                <SelectItem key={c} value={c}>
-                  {t(`platforms.category.${c}`)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <div className="flex items-center gap-2 rounded-md border border-[#CFC5BE] bg-[#FFE4B5] px-3 py-2">
-            <Switch
-              id="pf-enabled-only"
-              checked={enabledOnly}
-              onCheckedChange={(v) => {
-                setEnabledOnly(v);
+          <div className="flex items-center gap-2">
+            <Select
+              value={category}
+              onValueChange={(v) => {
+                setCategory(v);
                 setPage(1);
               }}
-            />
-            <Label htmlFor="pf-enabled-only" className="text-sm font-normal whitespace-nowrap">
-              {t("platforms.enabledOnly")}
-            </Label>
+            >
+              <SelectTrigger className="touch-target w-full sm:w-44">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORY_VALUES.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {t(`platforms.category.${c}`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2">
+              <Switch
+                id="pf-enabled-only"
+                checked={enabledOnly}
+                onCheckedChange={(v) => {
+                  setEnabledOnly(v);
+                  setPage(1);
+                }}
+              />
+              <Label htmlFor="pf-enabled-only" className="whitespace-nowrap text-sm font-normal">
+                {t("platforms.enabledOnly")}
+              </Label>
+            </div>
+            <AddPlatformDialog onCreated={load} />
           </div>
-          <AddPlatformDialog onCreated={load} />
         </div>
 
-        {/* Grid */}
-        <ScrollArea className="mt-6 h-[60rem] pr-1">
+        {/* Grid - 1 col mobile, 2 sm, 3 lg, 4 xl */}
+        <div className="mt-6 max-h-[60rem] overflow-y-auto aply-scroll pr-1">
           {loading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {Array.from({ length: 12 }).map((_, i) => (
-                <Skeleton
-                  key={i}
-                  className="h-44 rounded-lg border border-[#CFC5BE] bg-[#FFF4DC]"
-                />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="h-36 rounded-xl" />
               ))}
             </div>
           ) : items.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[#CFC5BE] bg-[#FFF4DC] px-6 py-16 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FFE4B5] text-[#C65D00]">
+            <div className="flex flex-col items-center gap-3 rounded-xl bg-card px-6 py-16 text-center ring-1 ring-border/40">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-primary">
                 <Icon name="search" size={20} />
               </span>
-              <p className="text-sm text-[#79695E]">
-                {t("platforms.empty")}
-              </p>
+              <p className="text-sm text-muted-foreground">{t("platforms.empty")}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {items.map((p) => (
                 <PlatformCard
                   key={p.id}
@@ -571,35 +565,18 @@ export function PlatformsSection() {
               ))}
             </div>
           )}
-        </ScrollArea>
+        </div>
 
         {/* Pagination */}
-        <div className="mt-6 flex items-center justify-between">
-          <p className="text-xs text-[#79695E]">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-muted-foreground">
             {t("platforms.page")} {page} {t("platforms.of")} {Math.max(1, totalPages)} · {total} {t("platforms.total")}
           </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1 || loading}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="border-[#CFC5BE] text-[#4A2F1A] hover:bg-[#FFE4B5]"
-            >
-              <Icon name="arrow-left" size={14} />
-              {t("platforms.prev")}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= totalPages || loading}
-              onClick={() => setPage((p) => p + 1)}
-              className="border-[#CFC5BE] text-[#4A2F1A] hover:bg-[#FFE4B5]"
-            >
-              {t("platforms.next")}
-              <Icon name="arrow-right" size={14} />
-            </Button>
-          </div>
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+          />
         </div>
         {togglingId && (
           <p className="sr-only" aria-live="polite">
