@@ -1,268 +1,68 @@
 /**
- * Client-side file text extraction.
- * Supports: .txt, .md, .csv, .json, .pdf, .docx
- * No external dependencies · uses browser APIs (FileReader, DecompressionStream).
- */
-
-/**
- * Extract text from a plain-text file (.txt, .md, .csv, .json).
- */
-async function extractPlainText(file: File): Promise<string> {
-  return await file.text();
-}
-
-/**
- * Extract text from a PDF file.
- * Parses the raw PDF stream and extracts text from BT...ET blocks.
- * This is a simplified parser · works for most text-based PDFs but won't
- * handle image-only PDFs or complex encodings. Good enough for resumes.
- */
-async function extractPdfText(file: File): Promise<string> {
-  const buffer = await file.arrayBuffer();
-  const bytes = new Uint8Array(buffer);
-  // PDF text is typically Latin-1 encoded inside Tj/TJ operators
-  let text = "";
-  // Convert to string in chunks (PDFs can be large)
-  const chunkSize = 16384;
-  for (let i = 0; i < bytes.length; i += chunkSize) {
-    const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
-    text += new TextDecoder("latin1").decode(chunk);
-  }
-
-  // Extract text from BT...ET blocks (Begin Text ... End Text)
-  const lines: string[] = [];
-  // Match text in parentheses within Tj operators: (text) Tj
-  const tjRegex = /\(([^)]*)\)\s*Tj/g;
-  let match;
-  while ((match = tjRegex.exec(text)) !== null) {
-    // Unescape PDF string escapes
-    const raw = match[1];
-    const unescaped = raw
-      .replace(/\\n/g, "\n")
-      .replace(/\\r/g, "\r")
-      .replace(/\\t/g, "\t")
-      .replace(/\\\(/g, "(")
-      .replace(/\\\)/g, ")")
-      .replace(/\\\\/g, "\\");
-    lines.push(unescaped);
-  }
-
-  // Also try TJ arrays: [(text1) -250 (text2)] TJ
-  const tjArrayRegex = /\[(.*?)\]\s*TJ/g;
-  while ((match = tjArrayRegex.exec(text)) !== null) {
-    const inner = match[1];
-    const parts = inner.match(/\(([^)]*)\)/g);
-    if (parts) {
-      const line = parts
-        .map((p) => p.slice(1, -1))
-        .join("")
-        .replace(/\\n/g, "\n")
-        .replace(/\\\(/g, "(")
-        .replace(/\\\)/g, ")");
-      lines.push(line);
-    }
-  }
-
-  // Clean up: join lines, remove excessive whitespace but preserve newlines
-  const result = lines
-    .join("\n")
-    .replace(/[ \t]+/g, " ")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-
-  if (!result) {
-    // PDF is likely image-based (scanned). Use VLM to extract text via vision.
-    return await extractPdfTextViaVLM(file);
-  }
-
-  return result;
-}
-
-/**
- * Fallback for image-based PDFs: convert to images and use VLM (vision model)
- * to read the text. This handles scanned resumes that have no text layer.
+ * Client-side file text extraction utility.
  *
- * Uses the z-ai-web-dev-sdk's vision API (server-side only).
- * Must be called from a server context (API route).
+ * For plain text files (.txt, .md, .csv, .json): reads directly.
+ * For PDF and DOCX: sends the file to /api/extract-resume (server-side)
+ * so the z-ai-web-dev-sdk is never imported in the browser.
  */
-async function extractPdfTextViaVLM(file: File): Promise<string> {
-  try {
-    // Convert PDF to base64 (chunked to avoid call stack overflow on large files)
-    const buffer = await file.arrayBuffer();
-    const bytes = new Uint8Array(buffer);
-    let binary = "";
-    const chunkSize = 8192;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
-      binary += String.fromCharCode.apply(null, Array.from(chunk) as unknown as number[]);
-    }
-    const base64 = btoa(binary);
 
-    // Use VLM to read the resume
-    const ZAI = (await import("z-ai-web-dev-sdk")).default;
-    let client: InstanceType<typeof ZAI>;
-
-    const apiKey = process.env.ZAI_API_KEY;
-    if (apiKey) {
-      client = new ZAI({
-        baseUrl: process.env.ZAI_BASE_URL ?? "https://api.z.ai/api/paas/v4",
-        apiKey,
-      });
-    } else {
-      // @ts-expect-error - create() is static
-      client = await ZAI.create();
-    }
-
-    const completion = await client.chat.completions.createVision({
-      model: "glm-4.5v",
-      messages: [
-        {
-          role: "system",
-          content: "You are a resume parser. Extract ALL text from the resume image exactly as written. Output ONLY the plain text, preserving the structure (headings, bullet points, dates). Do not summarize or modify anything.",
-        },
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: "Extract all text from this resume PDF. Output the full text content only.",
-            },
-            {
-              type: "file_url",
-              file_url: {
-                url: `data:application/pdf;base64,${base64}`,
-              },
-            },
-          ],
-        },
-      ],
-      thinking: { type: "disabled" },
-    });
-
-    const text = completion?.choices?.[0]?.message?.content?.trim() ?? "";
-    if (!text || text.length < 10) {
-      throw new Error("VLM could not extract text from this PDF. Try copy-pasting your resume text.");
-    }
-    return text;
-  } catch (err) {
-    console.error("[extractPdfTextViaVLM] error:", err);
-    throw new Error(
-      "Could not extract text from this PDF (it may be image-based). " +
-      (err instanceof Error ? err.message : "Unknown error") +
-      ". Try copy-pasting your resume text instead."
-    );
-  }
-}
+export const ACCEPTED_FILE_TYPES = ".txt,.md,.csv,.json,.pdf,.docx";
 
 /**
- * Extract text from a .docx file.
- * .docx is a ZIP archive; the text is in word/document.xml.
- * Uses the browser's native DecompressionStream (available in modern browsers).
- */
-async function extractDocxText(file: File): Promise<string> {
-  try {
-    const buffer = await file.arrayBuffer();
-    // DecompressionStream supports "deflate-raw" which is what ZIP uses
-    const ds = new DecompressionStream("deflate-raw");
-
-    // Parse ZIP structure to find word/document.xml
-    const view = new DataView(buffer);
-    const bytes = new Uint8Array(buffer);
-
-    // Find all local file headers (signature 0x04034b50)
-    const entries: Array<{ name: string; offset: number; compressedSize: number; compressionMethod: number }> = [];
-    for (let i = 0; i < bytes.length - 4; i++) {
-      if (view.getUint32(i, true) === 0x04034b50) {
-        const compressionMethod = view.getUint16(i + 8, true);
-        const compressedSize = view.getUint32(i + 18, true);
-        const fileNameLength = view.getUint16(i + 26, true);
-        const extraFieldLength = view.getUint16(i + 28, true);
-        const name = new TextDecoder().decode(
-          bytes.subarray(i + 30, i + 30 + fileNameLength)
-        );
-        const dataOffset = i + 30 + fileNameLength + extraFieldLength;
-        entries.push({ name, offset: dataOffset, compressedSize, compressionMethod });
-      }
-    }
-
-    const docEntry = entries.find((e) => e.name === "word/document.xml");
-    if (!docEntry) {
-      throw new Error("Could not find document.xml in .docx file");
-    }
-
-    const compressedData = bytes.subarray(
-      docEntry.offset,
-      docEntry.offset + docEntry.compressedSize
-    );
-
-    // Decompress (method 8 = deflate)
-    if (docEntry.compressionMethod !== 8) {
-      throw new Error("Unsupported compression in .docx");
-    }
-
-    const stream = new Blob([compressedData]).stream().pipeThrough(ds);
-    const decompressed = await new Response(stream).text();
-
-    // Extract text from XML: w:t elements contain text, w:p marks paragraphs
-    const text = decompressed
-      .replace(/<w:p[ >]/g, "\n<w:p ")
-      .replace(/<w:t[^>]*>/g, "")
-      .replace(/<\/w:t>/g, "")
-      .replace(/<[^>]+>/g, "")
-      .replace(/&lt;/g, "<")
-      .replace(/&gt;/g, ">")
-      .replace(/&amp;/g, "&")
-      .replace(/&quot;/g, '"')
-      .replace(/&#39;/g, "'")
-      .replace(/\n{3,}/g, "\n\n")
-      .trim();
-
-    if (!text) {
-      throw new Error("No text found in .docx document.xml");
-    }
-
-    return text;
-  } catch (err) {
-    throw new Error(
-      `Failed to parse .docx: ${err instanceof Error ? err.message : "unknown error"}. Try copy-pasting your resume text instead.`
-    );
-  }
-}
-
-/**
- * Main entry point · detect file type and extract text.
+ * Extract text from a file.
+ * - Plain text files: read directly on the client.
+ * - PDF/DOCX: POST to /api/extract-resume (server handles SDK + VLM).
  */
 export async function extractTextFromFile(file: File): Promise<string> {
   const name = file.name.toLowerCase();
   const type = file.type;
 
+  // Plain text: read directly
   if (
-    name.endsWith(".txt") ||
-    name.endsWith(".md") ||
-    name.endsWith(".csv") ||
-    name.endsWith(".json") ||
-    type === "text/plain" ||
-    type === "text/markdown"
+    name.endsWith(".txt") || name.endsWith(".md") ||
+    name.endsWith(".csv") || name.endsWith(".json") ||
+    type === "text/plain" || type === "text/markdown"
   ) {
-    return await extractPlainText(file);
+    return await file.text();
   }
 
-  if (name.endsWith(".pdf") || type === "application/pdf") {
-    return await extractPdfText(file);
+  // PDF or DOCX: send to server
+  if (name.endsWith(".pdf") || name.endsWith(".docx") || type === "application/pdf") {
+    const base64 = await fileToBase64(file);
+    const res = await fetch("/api/extract-resume", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        file: base64,
+        filename: file.name,
+        mimeType: file.type,
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || "Extraction failed");
+    }
+    return data.text;
   }
 
-  if (name.endsWith(".docx")) {
-    return await extractDocxText(file);
-  }
-
-  // Fallback: try reading as text
+  // Fallback: try as text
   try {
     return await file.text();
   } catch {
-    throw new Error(
-      `Unsupported file type: ${file.name}. Please use .txt, .md, .pdf, or .docx`
-    );
+    throw new Error(`Unsupported file type: ${file.name}. Use .txt, .md, .pdf, or .docx`);
   }
 }
 
-export const ACCEPTED_FILE_TYPES = ".txt,.md,.csv,.json,.pdf,.docx";
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      // Strip the data URL prefix (e.g. "data:application/pdf;base64,")
+      const base64 = result.split(",")[1] ?? result;
+      resolve(base64);
+    };
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsDataURL(file);
+  });
+}
