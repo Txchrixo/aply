@@ -11,93 +11,147 @@
         --muted: #79695E;
         --primary: #C65D00;
         --accent: #FF9F1C;
-        --border: #CFC5BE;
+        --border: #E5D5B5;
         --card: #FFF4DC;
       }
       * { box-sizing: border-box; margin: 0; padding: 0; }
       body {
-        width: 340px;
-        font-family: 'Poppins', system-ui, sans-serif;
+        width: 320px;
+        font-family: -apple-system, system-ui, sans-serif;
         background: var(--bg);
         color: var(--fg);
-        padding: 16px;
       }
-      h1 {
-        font-family: 'Fraunces', Georgia, serif;
-        font-size: 22px;
-        font-weight: 600;
-        letter-spacing: -0.01em;
+      .header {
+        padding: 14px 16px 10px;
+        border-bottom: 1px solid var(--border);
       }
-      .muted { color: var(--muted); font-size: 12px; }
-      .card {
-        background: var(--card);
-        border: 1px solid var(--border);
+      .header-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .logo {
+        width: 32px;
+        height: 32px;
         border-radius: 8px;
-        padding: 12px;
-        margin-top: 12px;
+        background: var(--card);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
       }
+      h1 { font-size: 16px; font-weight: 600; }
+      .tagline { font-size: 11px; color: var(--muted); margin-top: 1px; }
+      .body { padding: 12px 16px; }
       .stat {
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: baseline;
-        padding: 6px 0;
+        padding: 8px 0;
         border-bottom: 1px solid var(--border);
       }
       .stat:last-child { border-bottom: 0; }
-      .stat b { font-family: 'Fraunces', serif; font-size: 18px; }
+      .stat-label { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+      .stat-value { font-size: 16px; font-weight: 600; }
+      .dot {
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+      }
+      .dot-green { background: #2ea043; }
+      .dot-orange { background: var(--primary); }
       .btn {
         display: block;
         width: 100%;
         background: var(--primary);
         color: var(--bg);
         border: 0;
-        border-radius: 6px;
+        border-radius: 8px;
         padding: 10px;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 500;
         font-size: 13px;
+        font-weight: 500;
         cursor: pointer;
         margin-top: 12px;
         text-decoration: none;
         text-align: center;
       }
       .btn:hover { background: var(--accent); }
-      .hint { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
-      .dot {
-        display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-        background: #2ea043; margin-right: 6px; vertical-align: middle;
+      .btn-outline {
+        background: transparent;
+        color: var(--primary);
+        border: 1px solid var(--primary);
       }
+      .btn-outline:hover { background: var(--card); }
+      .hint { font-size: 11px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+      .divider { height: 1px; background: var(--border); margin: 10px 0; }
+      .actions { display: flex; gap: 8px; }
+      .actions .btn { flex: 1; margin-top: 0; }
     </style>
   </head>
   <body>
-    <h1>Aply</h1>
-    <p class="muted">Your 24/7 auto-application agent</p>
-
-    <div class="card">
-      <div class="stat"><span><span class="dot"></span>Monitoring</span><b id="mon">-</b></div>
-      <div class="stat"><span>Platforms</span><b id="plat">-</b></div>
-      <div class="stat"><span>Pending approvals</span><b id="pend">-</b></div>
-      <div class="stat"><span>Submitted</span><b id="sub">-</b></div>
+    <div class="header">
+      <div class="header-row">
+        <div class="logo">🚀</div>
+        <div>
+          <h1>Aply</h1>
+          <div class="tagline">Auto-application agent</div>
+        </div>
+      </div>
     </div>
 
-    <a class="btn" href="http://localhost:3000" target="_blank">Open dashboard</a>
-    <p class="hint">
-      Right-click any job offer page → <b>Aply: capture this job offer</b>.
-      Right-click any application form → <b>Aply: auto-fill this application form</b>.
-    </p>
+    <div class="body">
+      <div class="stat">
+        <span class="stat-label"><span class="dot dot-green"></span>Monitoring</span>
+        <span class="stat-value" id="mon">-</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label"><span class="dot dot-orange"></span>Pending</span>
+        <span class="stat-value" id="pend">-</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Submitted</span>
+        <span class="stat-value" id="sub">-</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="actions">
+        <a class="btn" href="http://localhost:3000" target="_blank">Dashboard</a>
+        <button class="btn btn-outline" id="fillBtn">Fill form</button>
+      </div>
+
+      <p class="hint">
+        Right-click any job page: "Aply: capture this job offer"<br>
+        Right-click any application form: "Aply: auto-fill this form"
+      </p>
+    </div>
 
     <script>
       fetch("http://localhost:3000/api/stats")
         .then((r) => r.json())
         .then((s) => {
           document.getElementById("mon").textContent = s.monitoringEnabled ? "Active" : "Paused";
-          document.getElementById("plat").textContent = s.platformsEnabled;
           document.getElementById("pend").textContent = s.pendingApprovals;
           document.getElementById("sub").textContent = s.submittedTotal;
         })
         .catch(() => {
-          document.getElementById("mon").textContent = "offline";
+          document.getElementById("mon").textContent = "Offline";
         });
+
+      document.getElementById("fillBtn").addEventListener("click", () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (tabs[0]) {
+            chrome.tabs.sendMessage(tabs[0].id, { type: "APLY_FILL_FORM" }, (resp) => {
+              if (resp?.ok) {
+                alert("Filled " + resp.filled + " fields");
+              } else {
+                alert("Could not fill: " + (resp?.error || "unknown"));
+              }
+            });
+          }
+        });
+      });
     </script>
   </body>
 </html>
