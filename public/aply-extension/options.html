@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Aply · Options</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 560px; margin: 32px auto; padding: 0 16px; color: #4A2F1A; background: #FFE4B5; }
+      h1 { font-family: Georgia, serif; }
+      label { display: block; margin: 12px 0 4px; font-weight: 500; }
+      input { width: 100%; padding: 8px; border: 1px solid #CFC5BE; border-radius: 6px; background: #FFF4DC; }
+      button { background: #C65D00; color: #FFE4B5; border: 0; border-radius: 6px; padding: 10px 18px; margin-top: 16px; cursor: pointer; font-weight: 500; }
+      .hint { color: #79695E; font-size: 12px; margin-top: 4px; }
+    </style>
+  </head>
+  <body>
+    <h1>Aply · Options</h1>
+    <p style="color:#79695E">Configure how Aply talks to your local dashboard.</p>
+
+    <label for="dashboard">Dashboard URL</label>
+    <input id="dashboard" type="url" value="http://localhost:3000" />
+    <p class="hint">Where the Aply Next.js dashboard is running locally.</p>
+
+    <label for="whatsapp">WhatsApp number (for approvals)</label>
+    <input id="whatsapp" type="text" placeholder="+33 6 12 34 56 78" />
+
+    <label for="email">Email (for approvals)</label>
+    <input id="email" type="email" placeholder="you@example.com" />
+
+    <button id="save">Save</button>
+    <p id="saved" class="hint" style="color:#2ea043"></p>
+
+    <script>
+      const keys = ["dashboard", "whatsapp", "email"];
+      chrome.storage.local.get(keys, (vals) => {
+        keys.forEach((k) => { if (vals[k]) document.getElementById(k).value = vals[k]; });
+      });
+      document.getElementById("save").addEventListener("click", () => {
+        const data = {};
+        keys.forEach((k) => { data[k] = document.getElementById(k).value; });
+        chrome.storage.local.set(data, () => {
+          document.getElementById("saved").textContent = "Saved.";
+          setTimeout(() => (document.getElementById("saved").textContent = ""), 2000);
+        });
+      });
+    </script>
+  </body>
+</html>

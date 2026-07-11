@@ -1,0 +1,418 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   APLY DESIGN SYSTEM
+   Reference: Fontpair Playground · Libre Baskerville / IBM Plex Sans
+   Adapted: Fraunces (headings) + Poppins (body), warm cream palette
+   ============================================================ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-body);
+  --font-heading: var(--font-heading);
+  --font-mono: var(--font-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  /* Aply palette · warm cream / brand-forward */
+  --font-heading: 'Fraunces', Georgia, serif;
+  --font-body: 'Poppins', system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius: 0.5rem;
+
+  /* Core palette from design.md */
+  --background: #FFE4B5;            /* page background + card surfaces */
+  --foreground: #4A2F1A;            /* primary text, headings, icons */
+  --card: #FFF4DC;                  /* slightly lighter card surface for depth */
+  --card-foreground: #4A2F1A;
+  --popover: #FFF4DC;
+  --popover-foreground: #4A2F1A;
+
+  --primary: #C65D00;               /* CTAs, active states, links */
+  --primary-foreground: #FFE4B5;    /* text on primary */
+
+  --secondary: #F5D9A8;             /* soft secondary surface */
+  --secondary-foreground: #4A2F1A;
+
+  --muted: #F5E6C8;                 /* muted surface */
+  --muted-foreground: #79695E;      /* secondary text, metadata */
+
+  --accent: #FF9F1C;                /* hover / pressed / deep emphasis */
+  --accent-foreground: #4A2F1A;
+
+  --destructive: #B23A1E;           /* warm destructive (no pure red) */
+  --destructive-foreground: #FFE4B5;
+
+  --border: #CFC5BE;                /* dividers, input borders, card outlines */
+  --input: #E8D5B0;
+  --ring: #C65D00;
+
+  /* Chart palette · staying in warm family */
+  --chart-1: #C65D00;
+  --chart-2: #FF9F1C;
+  --chart-3: #8B4513;
+  --chart-4: #D2691E;
+  --chart-5: #A0522D;
+
+  --sidebar: #FFF4DC;
+  --sidebar-foreground: #4A2F1A;
+  --sidebar-primary: #C65D00;
+  --sidebar-primary-foreground: #FFE4B5;
+  --sidebar-accent: #F5D9A8;
+  --sidebar-accent-foreground: #4A2F1A;
+  --sidebar-border: #CFC5BE;
+  --sidebar-ring: #C65D00;
+}
+
+.dark {
+  /* Aply dark mode · deep warm cocoa */
+  --background: #2A1A0E;
+  --foreground: #FFE4B5;
+  --card: #3A2417;
+  --card-foreground: #FFE4B5;
+  --popover: #3A2417;
+  --popover-foreground: #FFE4B5;
+
+  --primary: #FF9F1C;
+  --primary-foreground: #2A1A0E;
+
+  --secondary: #4A2F1A;
+  --secondary-foreground: #FFE4B5;
+
+  --muted: #4A2F1A;
+  --muted-foreground: #C9B89F;
+
+  --accent: #C65D00;
+  --accent-foreground: #FFE4B5;
+
+  --destructive: #D14B2A;
+  --destructive-foreground: #FFE4B5;
+
+  --border: #5A3D26;
+  --input: #4A2F1A;
+  --ring: #FF9F1C;
+
+  --chart-1: #FF9F1C;
+  --chart-2: #C65D00;
+  --chart-3: #E8A04C;
+  --chart-4: #D2691E;
+  --chart-5: #B8762E;
+
+  --sidebar: #3A2417;
+  --sidebar-foreground: #FFE4B5;
+  --sidebar-primary: #FF9F1C;
+  --sidebar-primary-foreground: #2A1A0E;
+  --sidebar-accent: #4A2F1A;
+  --sidebar-accent-foreground: #FFE4B5;
+  --sidebar-border: #5A3D26;
+  --sidebar-ring: #FF9F1C;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+    font-feature-settings: "ss01", "cv01";
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: -0.01em;
+  }
+  /* Visible focus ring for keyboard navigation */
+  *:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* Selection color */
+  ::selection {
+    background-color: rgba(198, 93, 0, 0.2);
+    color: var(--foreground);
+  }
+}
+
+/* Custom scrollbar · warm themed */
+@layer utilities {
+  .aply-scroll::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .aply-scroll::-webkit-scrollbar-track {
+    background: var(--muted);
+    border-radius: 8px;
+  }
+  .aply-scroll::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 8px;
+    border: 2px solid var(--muted);
+  }
+  .aply-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Subtle paper texture for the warm cream background */
+  .aply-paper {
+    background-color: var(--background);
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(198, 93, 0, 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(255, 159, 28, 0.05) 0%, transparent 40%);
+  }
+
+  /* Dark mode overrides moved outside @layer for higher specificity */
+
+  .aply-card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .aply-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px -8px rgba(74, 47, 26, 0.18);
+    border-color: var(--primary);
+  }
+
+  /* Radar scanning animation · shown when Scan now is active */
+  .aply-radar {
+    position: relative;
+    overflow: hidden;
+  }
+  .aply-radar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 159, 28, 0.15) 50%,
+      transparent 100%
+    );
+    animation: aply-radar-sweep 1.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes aply-radar-sweep {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  /* Subtle gradient text for emphasized headings */
+  .aply-gradient-text {
+    background: linear-gradient(135deg, #C65D00 0%, #FF9F1C 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Shimmer for loading skeletons */
+  .aply-shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+  .aply-shimmer::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 244, 220, 0.4) 50%,
+      transparent 100%
+    );
+    animation: aply-shimmer-sweep 1.8s ease-in-out infinite;
+  }
+  @keyframes aply-shimmer-sweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+}
+
+/* ============================================================
+   DARK MODE OVERRIDES (outside @layer for max specificity)
+   Maps hardcoded warm hex values to the dark palette tokens.
+   ============================================================ */
+.dark .bg-\[\#FFE4B5\] {
+  background-color: var(--background) !important;
+}
+.dark .bg-\[\#FFF4DC\] {
+  background-color: var(--card) !important;
+}
+.dark .bg-\[\#FFF4DC\]\/95,
+.dark .bg-\[\#FFF4DC\]\/80,
+.dark .bg-\[\#FFF4DC\]\/70,
+.dark .bg-\[\#FFF4DC\]\/60 {
+  background-color: color-mix(in srgb, var(--card) 85%, transparent) !important;
+}
+.dark .bg-\[\#F5D9A8\],
+.dark .bg-\[\#F5E6C8\] {
+  background-color: var(--secondary) !important;
+}
+.dark .text-\[\#4A2F1A\] {
+  color: var(--foreground) !important;
+}
+.dark .text-\[\#79695E\] {
+  color: var(--muted-foreground) !important;
+}
+.dark .border-\[\#CFC5BE\] {
+  border-color: var(--border) !important;
+}
+.dark .border-\[\#CFC5BE\]\/40,
+.dark .border-\[\#CFC5BE\]\/30 {
+  border-color: color-mix(in srgb, var(--border) 70%, transparent) !important;
+}
+.dark .divide-\[\#CFC5BE\] > * {
+  border-color: var(--border) !important;
+}
+.dark .border-\[\#C65D00\]\/40 {
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent) !important;
+}
+.dark .ring-\[\#C65D00\]\/20 {
+  --tw-ring-color: color-mix(in srgb, var(--primary) 30%, transparent) !important;
+}
+.dark .bg-\[\#C65D00\] {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+}
+.dark .bg-\[\#C65D00\]:hover {
+  background-color: var(--accent) !important;
+}
+.dark .text-\[\#C65D00\] {
+  color: var(--primary) !important;
+}
+.dark .text-\[\#FF9F1C\] {
+  color: var(--accent) !important;
+}
+.dark .bg-\[\#FF9F1C\] {
+  background-color: var(--accent) !important;
+}
+.dark .border-\[\#C65D00\]\/30 {
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent) !important;
+}
+.dark .border-\[\#FF9F1C\]\/40,
+.dark .border-\[\#FF9F1C\]\/50 {
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent) !important;
+}
+.dark .bg-\[\#2ea043\]\/12,
+.dark .bg-\[\#2ea043\]\/10 {
+  background-color: color-mix(in srgb, #2ea043 20%, transparent) !important;
+}
+.dark .text-\[\#2ea043\] {
+  color: #4ade80 !important;
+}
+.dark .border-\[\#2ea043\]\/30 {
+  border-color: color-mix(in srgb, #4ade80 40%, transparent) !important;
+}
+.dark .bg-\[\#B23A1E\]\/12,
+.dark .bg-\[\#B23A1E\]\/10 {
+  background-color: color-mix(in srgb, #d14b2a 20%, transparent) !important;
+}
+.dark .text-\[\#B23A1E\] {
+  color: #e8623f !important;
+}
+.dark .border-\[\#B23A1E\]\/30 {
+  border-color: color-mix(in srgb, #e8623f 40%, transparent) !important;
+}
+.dark .border-\[\#B23A1E\] {
+  border-color: #d14b2a !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--muted-foreground) !important;
+}
+/* Dark mode: other hardcoded warm colors */
+.dark .bg-\[\#8B4513\]\/10 { background-color: color-mix(in srgb, #c97f3e 18%, transparent) !important; }
+.dark .text-\[\#8B4513\] { color: #d49a5e !important; }
+.dark .border-\[\#8B4513\]\/30 { border-color: color-mix(in srgb, #d49a5e 40%, transparent) !important; }
+.dark .bg-\[\#A0522D\]\/12 { background-color: color-mix(in srgb, #c97f3e 20%, transparent) !important; }
+.dark .text-\[\#A0522D\] { color: #d49a5e !important; }
+.dark .border-\[\#A0522D\]\/30 { border-color: color-mix(in srgb, #d49a5e 40%, transparent) !important; }
+.dark .bg-\[\#D2691E\]\/12 { background-color: color-mix(in srgb, #e8a04c 20%, transparent) !important; }
+.dark .border-\[\#D2691E\]\/30 { border-color: color-mix(in srgb, #e8a04c 40%, transparent) !important; }
+.dark .bg-\[\#C65D00\]\/12 { background-color: color-mix(in srgb, var(--primary) 25%, transparent) !important; }
+.dark .bg-\[\#C65D00\]\/15 { background-color: color-mix(in srgb, var(--primary) 25%, transparent) !important; }
+.dark .bg-\[\#C65D00\]\/10 { background-color: color-mix(in srgb, var(--primary) 20%, transparent) !important; }
+.dark .bg-\[\#FF9F1C\]\/15 { background-color: color-mix(in srgb, var(--accent) 25%, transparent) !important; }
+.dark .bg-\[\#FF9F1C\]\/20 { background-color: color-mix(in srgb, var(--accent) 30%, transparent) !important; }
+.dark .bg-\[\#79695E\]\/12 { background-color: color-mix(in srgb, var(--muted-foreground) 20%, transparent) !important; }
+.dark .bg-\[\#FFE4B5\]\/60 { background-color: color-mix(in srgb, var(--background) 60%, transparent) !important; }
+.dark .bg-\[\#FF9F1C\]\/15:hover { background-color: color-mix(in srgb, var(--accent) 30%, transparent) !important; }
+
+/* ============================================================
+   PRINT STYLES · for PDF export of the analytics section
+   ============================================================ */
+@media print {
+  body {
+    background: white !important;
+    color: #1a1a1a !important;
+  }
+  header, footer, nav, .no-print { display: none !important; }
+  /* Only print the analytics section */
+  main > section:not(#analytics) { display: none !important; }
+  #analytics {
+    padding: 0 !important;
+    page-break-inside: avoid;
+  }
+  #analytics .recharts-wrapper {
+    page-break-inside: avoid;
+  }
+  /* Light backgrounds for print */
+  #analytics [class*="bg-[#FFF4DC]"],
+  #analytics [class*="bg-[#FFE4B5]"] {
+    background: #fafafa !important;
+    border: 1px solid #ddd !important;
+  }
+  #analytics [class*="text-[#4A2F1A]"] {
+    color: #1a1a1a !important;
+  }
+  #analytics [class*="text-[#79695E]"] {
+    color: #666 !important;
+  }
+}

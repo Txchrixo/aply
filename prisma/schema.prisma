@@ -1,0 +1,276 @@
+// Aply · Prisma schema
+// Auto-application agent: platforms, companies, job offers, cross-references,
+// form field requirements, account credentials, import pipeline, applications.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Platforms monitored by Aply (190+ seeded)
+// ---------------------------------------------------------------------------
+model Platform {
+  id              String   @id @default(cuid())
+  name            String   @unique
+  url             String
+  category        String   // generalist | freelance | remote | tech | startup | design | regional_fr | regional_de | regional_other | niche
+  languages       String   // JSON array as string, e.g. ["en","fr"]
+  contractTypes   String   // JSON array as string
+  hasLoginRequired Boolean @default(false)
+  hasAntiBot      Boolean  @default(false)
+  priority        String   @default("medium") // high | medium | low
+  notes           String?
+  enabled         Boolean  @default(true)
+  lastCheckedAt   DateTime?
+  newOffersCount  Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  jobOffers       JobOffer[]
+  formRequirements FormFieldRequirement[]
+  credentials     AccountCredential[]
+}
+
+// ---------------------------------------------------------------------------
+// Companies · tracked separately so we can link offers across job boards
+// and prefer applying via the company's own career page.
+// ---------------------------------------------------------------------------
+model Company {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  website       String?  // official website, e.g. https://acme.com
+  industry      String?  // e.g. Fintech, SaaS, Healthcare
+  size          String?  // startup | small | medium | large | enterprise
+  linkedinUrl   String?  // LinkedIn company page
+  description   String?
+  logoColor     String?  // deterministic brand color for UI avatars
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  careerPages   CompanyCareerPage[]
+  jobOffers     JobOffer[]
+  credentials   AccountCredential[]
+}
+
+// ---------------------------------------------------------------------------
+// Company career pages · Aply monitors these directly.
+// If a job is found on a job board, Aply checks the company's career page
+// first and prefers applying there (more direct, no middleman).
+// ---------------------------------------------------------------------------
+model CompanyCareerPage {
+  id            String   @id @default(cuid())
+  companyId     String
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  url           String   // e.g. https://acme.com/careers
+  rssFeedUrl    String?  // if the career page has an RSS/JSON feed
+  jobsBoardUrl  String?  // greenhouse.io, lever.co, workday, ashby, etc.
+  atsSystem     String?  // greenhouse | lever | workday | ashby | smartrecruiters | other
+  lastCheckedAt DateTime?
+  enabled       Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([companyId])
+}
+
+// ---------------------------------------------------------------------------
+// Job offers detected by the monitoring pipeline
+// ---------------------------------------------------------------------------
+model JobOffer {
+  id            String   @id @default(cuid())
+  externalId    String?  // id on the source platform
+  platformId    String?
+  platform      Platform? @relation(fields: [platformId], references: [id], onDelete: SetNull)
+  companyId     String?
+  companyRecord Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  title         String
+  company       String?  // denormalized company name for quick display
+  location      String?
+  url           String
+  description   String?
+  contractType  String?  // full-time | part-time | internship | freelance | remote
+  language      String?  // detected language: en | fr | de | ...
+  salary        String?
+  postedAt      DateTime?
+  detectedAt    DateTime @default(now())
+  status        String   @default("new") // new | importing | prepared | pending_approval | applied | rejected | skipped
+  importProgress Int     @default(100) // 0-100, tracks the import/fill pipeline
+  importStep    String?  // current step: detecting_fields | generating_letter | filling_form | ready
+  applicationSource String? // career_page | job_board · where the application was/will be submitted
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  applications   Application[]
+  crossRefsAsPrimary  OfferCrossReference[] @relation("PrimaryOffer")
+  crossRefsAsAlias    OfferCrossReference[] @relation("AliasOffer")
+
+  @@index([platformId])
+  @@index([companyId])
+  @@index([status])
+  @@index([detectedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Offer cross-references · the same job found on multiple platforms.
+// Links a primary offer (e.g. found on Indeed) to the same job on the
+// company career page or other job boards. Lets Aply choose the best
+// application channel and shows the user all available sources.
+// ---------------------------------------------------------------------------
+model OfferCrossReference {
+  id            String   @id @default(cuid())
+  primaryOfferId String
+  primaryOffer  JobOffer @relation("PrimaryOffer", fields: [primaryOfferId], references: [id], onDelete: Cascade)
+  aliasOfferId  String
+  aliasOffer    JobOffer @relation("AliasOffer", fields: [aliasOfferId], references: [id], onDelete: Cascade)
+  source        String   // job_board | career_page | linkedin | other
+  url           String   // direct link to the job detail on the alias source
+  confidence    Float    @default(0.8) // how confident Aply is this is the same job
+  createdAt     DateTime @default(now())
+
+  @@index([primaryOfferId])
+  @@index([aliasOfferId])
+}
+
+// ---------------------------------------------------------------------------
+// Form field requirements per platform.
+// Different job boards ask for different info: some want full education
+// history, some want professional experience entries, some have custom
+// questions ("Why do you want this job?", "Salary expectations", etc.).
+// Aply stores the schema so it can prepare all answers in advance.
+// ---------------------------------------------------------------------------
+model FormFieldRequirement {
+  id            String   @id @default(cuid())
+  platformId    String
+  platform      Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
+  fieldKey      String   // full_name | email | phone | education | experience | cover_letter | custom_question_xxx
+  fieldLabel    String   // human-readable label as shown on the form
+  fieldType     String   // text | textarea | email | tel | select | checkbox | file | date
+  isRequired    Boolean  @default(true)
+  options       String?  // JSON array for select fields
+  placeholder   String?
+  detectionSelector String? // CSS selector hint for the extension auto-fill
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([platformId])
+  @@index([fieldKey])
+}
+
+// ---------------------------------------------------------------------------
+// Account credentials · accounts Aply created on job sites to apply.
+// Uses the user's chosen emails. Tracks which email was used where.
+// ---------------------------------------------------------------------------
+model AccountCredential {
+  id            String   @id @default(cuid())
+  platformId    String?
+  platform      Platform? @relation(fields: [platformId], references: [id], onDelete: SetNull)
+  companyId     String?
+  company       Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  email         String   // the email used to create the account
+  password      String?  // stored encrypted in production
+  username      String?  // username if different from email
+  status        String   @default("not_created") // not_created | creating | created | login_required | blocked
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([platformId])
+  @@index([companyId])
+}
+
+// ---------------------------------------------------------------------------
+// Applications (drafts prepared by Aply + submitted ones)
+// ---------------------------------------------------------------------------
+model Application {
+  id            String   @id @default(cuid())
+  jobOfferId    String
+  jobOffer      JobOffer @relation(fields: [jobOfferId], references: [id], onDelete: Cascade)
+  resumeId      String?
+  coverLetter   String?  // generated cover letter / answers
+  formFields    String?  // JSON of detected form fields + filled values
+  formAnswers   String?  // JSON of answers to platform-specific questions
+  language      String?  // language used for the cover letter
+  status        String   @default("draft") // draft | pending_approval | approved | submitted | rejected | failed
+  approvalChannel String? // email | whatsapp | dashboard
+  approvedAt    DateTime?
+  submittedAt   DateTime?
+  submittedVia  String?  // career_page | job_board · where it was actually submitted
+  credentialId  String?  // which account was used (if any)
+  errorMessage  String?
+  qualityScore  Float?   // 0-1 anti-AI-detection / coherence score
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  notifications NotificationLog[]
+
+  @@index([jobOfferId])
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------------
+// User resume (can hold multiple versions)
+// ---------------------------------------------------------------------------
+model Resume {
+  id            String   @id @default(cuid())
+  label         String   @default("Main resume")
+  rawText       String   // extracted plain text from PDF/DOCX
+  structured    String?  // JSON: skills, experience, education, etc.
+  language      String   @default("en")
+  isDefault     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Past applications · training data for the LLM style/persona
+// ---------------------------------------------------------------------------
+model PastApplication {
+  id            String   @id @default(cuid())
+  jobTitle      String
+  company       String?
+  coverLetter   String
+  outcome       String?  // accepted | rejected | no_answer | manual
+  language      String   @default("en")
+  usedAsExample Boolean  @default(true)
+  createdAt     DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
+// Aply user settings (single row, keyed by singleton id)
+// ---------------------------------------------------------------------------
+model Setting {
+  id            String   @id @default("aply")
+  notifyEmail   String?
+  notifyWhatsapp String?
+  notifyChannel String   @default("dashboard") // dashboard | email | whatsapp | both
+  languages     String   @default("[\"en\",\"fr\",\"de\"]")
+  autoApproveThreshold Float @default(0)
+  monitoringEnabled Boolean @default(true)
+  scanIntervalMinutes Int  @default(15)
+  antiAiStrictMode Boolean @default(true)
+  // Emails Aply can use to create accounts on job sites
+  accountEmails String  @default("[\"alex.martin@example.com\"]") // JSON array
+  preferCareerPage Boolean @default(true) // prefer applying via company career page over job board
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Notification log (audit trail of approval requests / responses)
+// ---------------------------------------------------------------------------
+model NotificationLog {
+  id            String   @id @default(cuid())
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  channel       String   // email | whatsapp | dashboard
+  direction     String   // out (request) | in (response)
+  payload       String?  // JSON: summary sent or response received
+  status        String   @default("sent") // sent | delivered | read | approved | rejected | failed
+  createdAt     DateTime @default(now())
+
+  @@index([applicationId])
+}

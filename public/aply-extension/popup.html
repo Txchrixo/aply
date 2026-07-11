@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aply</title>
+    <style>
+      :root {
+        --bg: #FFE4B5;
+        --fg: #4A2F1A;
+        --muted: #79695E;
+        --primary: #C65D00;
+        --accent: #FF9F1C;
+        --border: #CFC5BE;
+        --card: #FFF4DC;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        width: 340px;
+        font-family: 'Poppins', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        padding: 16px;
+      }
+      h1 {
+        font-family: 'Fraunces', Georgia, serif;
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .muted { color: var(--muted); font-size: 12px; }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 12px;
+      }
+      .stat {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .stat:last-child { border-bottom: 0; }
+      .stat b { font-family: 'Fraunces', serif; font-size: 18px; }
+      .btn {
+        display: block;
+        width: 100%;
+        background: var(--primary);
+        color: var(--bg);
+        border: 0;
+        border-radius: 6px;
+        padding: 10px;
+        font-family: 'Poppins', sans-serif;
+        font-weight: 500;
+        font-size: 13px;
+        cursor: pointer;
+        margin-top: 12px;
+        text-decoration: none;
+        text-align: center;
+      }
+      .btn:hover { background: var(--accent); }
+      .hint { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+      .dot {
+        display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+        background: #2ea043; margin-right: 6px; vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Aply</h1>
+    <p class="muted">Your 24/7 auto-application agent</p>
+
+    <div class="card">
+      <div class="stat"><span><span class="dot"></span>Monitoring</span><b id="mon">-</b></div>
+      <div class="stat"><span>Platforms</span><b id="plat">-</b></div>
+      <div class="stat"><span>Pending approvals</span><b id="pend">-</b></div>
+      <div class="stat"><span>Submitted</span><b id="sub">-</b></div>
+    </div>
+
+    <a class="btn" href="http://localhost:3000" target="_blank">Open dashboard</a>
+    <p class="hint">
+      Right-click any job offer page → <b>Aply: capture this job offer</b>.
+      Right-click any application form → <b>Aply: auto-fill this application form</b>.
+    </p>
+
+    <script>
+      fetch("http://localhost:3000/api/stats")
+        .then((r) => r.json())
+        .then((s) => {
+          document.getElementById("mon").textContent = s.monitoringEnabled ? "Active" : "Paused";
+          document.getElementById("plat").textContent = s.platformsEnabled;
+          document.getElementById("pend").textContent = s.pendingApprovals;
+          document.getElementById("sub").textContent = s.submittedTotal;
+        })
+        .catch(() => {
+          document.getElementById("mon").textContent = "offline";
+        });
+    </script>
+  </body>
+</html>
