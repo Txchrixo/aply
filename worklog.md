@@ -894,3 +894,33 @@ Key findings from research:
 4. ghost-cursor + human-typing for human behavior simulation
 5. CapSolver for CAPTCHA solving (paid, ~$0.80/1k, free trial credit)
 6. No truly free CAPTCHA solver or residential proxy exists
+
+---
+Task ID: HONEST-FIX
+Agent: main
+Task: Fix incomplete todos - pagination wiring, semantic tokens, true responsive
+
+Honest assessment of what was missing:
+- Pagination component existed but was NOT wired into any section
+- UI redesign was incomplete (only hero was done)
+- Responsive was "bidon" (just Tailwind classes, not adapted components)
+- Hardcoded hex colors everywhere (dark mode relied on CSS hacks)
+
+What was fixed:
+1. Wired Pagination component into platforms section (replaced old prev/next buttons)
+2. Redesigned platform cards: ring instead of border, touch-target for mobile, cleaner layout
+3. Redesigned filter bar: stacked on mobile, touch-friendly inputs
+4. Grid: 1 col mobile (was 1 but too narrow), proper breakpoints
+5. Replaced ALL hardcoded hex colors with semantic tokens across ALL sections:
+   - monitoring, approvals, history, analytics, settings, training, resume,
+     extension, comparison, drawer, platform drawer, onboarding, footer
+   - Now uses bg-card, text-foreground, text-muted-foreground, border-border, etc.
+   - Dark mode works natively without CSS override hacks
+6. Verified: desktop 1440px, mobile 390px, tablet 768px all render correctly
+7. Dark mode verified: bg=#2A1A0E, text=#FFE4B5 on all sections
+
+Remaining honest gaps:
+- History section still needs Pagination wired (has infinite scroll area, not paginated)
+- "Submit on our behalf" after approval is simulated (not real browser automation)
+- Anti-bot bypass is researched but not deployed (needs FlareSolverr Docker + CapSolver)
+- These are documented in the research report and architecture is ready for them
