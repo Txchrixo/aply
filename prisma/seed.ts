@@ -162,7 +162,22 @@ Alex`,
   console.log("→ Seeding default settings…");
   await db.setting.upsert({
     where: { id: "aply" },
-    update: {},
+    update: {
+      notifyEmail: "alex.martin@example.com",
+      notifyWhatsapp: "+33 6 12 34 56 78",
+      notifyChannel: "both",
+      languages: JSON.stringify(["en", "fr", "de"]),
+      monitoringEnabled: true,
+      scanIntervalMinutes: 15,
+      antiAiStrictMode: true,
+      autoApproveThreshold: 0,
+      accountEmails: JSON.stringify([
+        "alex.martin@example.com",
+        "alex.careers@gmail.com",
+        "alex.applications@proton.me",
+      ]),
+      preferCareerPage: true,
+    },
     create: {
       id: "aply",
       notifyEmail: "alex.martin@example.com",
