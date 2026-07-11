@@ -924,3 +924,40 @@ Remaining honest gaps:
 - "Submit on our behalf" after approval is simulated (not real browser automation)
 - Anti-bot bypass is researched but not deployed (needs FlareSolverr Docker + CapSolver)
 - These are documented in the research report and architecture is ready for them
+
+---
+Task ID: LANDING-AUTH-ONBOARDING
+Agent: main
+Task: Landing page + auth + onboarding + API explorer + visual fixes
+
+Work Log:
+- Fixed toaster colors: now uses card bg + foreground text (was gray/unreadable)
+- Removed all GLM-4.6 mentions from i18n (EN/FR/DE) - LLM is just a provider, not a selling point
+- Removed EN/FR/DE language lists from badge, subtitle, footer
+- Redesigned header: removed logo card enclosure (just icon + text), compact nav
+- Fixed Compare section gap (was colliding with section above, added mt-8)
+- Redesigned onboarding banner: gradient bg, inline steps, emoji greeting
+- Extension download: now downloads .zip directly + link to chrome://extensions
+- Created landing page at / with hero, features, how-it-works, CTA
+- Created login at /login (email + password)
+- Created signup at /signup (name + email + password -> redirects to onboarding)
+- Created onboarding at /onboarding (5 steps: resume upload, account emails, notifications, platform logins, done)
+- Created API explorer at /api-explorer (swagger-like, 19 endpoints, test button, response viewer)
+- Moved dashboard from / to /dashboard
+- Route groups: (landing), (auth), (dashboard)
+- All tests still pass (65/65)
+
+Architecture:
+- / -> landing page (marketing)
+- /login -> login
+- /signup -> signup
+- /onboarding -> onboarding flow
+- /dashboard -> main dashboard (was /)
+- /api-explorer -> API testing tool
+
+Stage Summary:
+- Landing page converts visitors to signups
+- Onboarding collects resume, emails, notification prefs, platform logins
+- API explorer lets developers test all endpoints
+- All visual fixes applied (toaster, GLM mentions, logo, gaps)
+- 65 tests pass
