@@ -400,7 +400,11 @@ export function ApprovalsSection({ onApprove }: ApprovalsSectionProps) {
           )}
 
           {/* Comparison view · only shows when 2+ pending */}
-          {items.length >= 2 && <ComparisonView />}
+          {items.length >= 2 && (
+            <div className="mt-8">
+              <ComparisonView />
+            </div>
+          )}
         </div>
       </div>
     </section>

@@ -82,15 +82,25 @@ export function ExtensionSection() {
               asChild
               className="bg-primary text-primary-foreground hover:bg-accent hover:text-foreground"
             >
-              <a href="/aply-extension/manifest.json" download>
+              <a href="/api/extension/download" download="aply-extension.zip">
                 <Icon name="download" size={14} />
-                {t("extension.download")}
+                Download extension (.zip)
               </a>
             </Button>
             <Button
               asChild
               variant="outline"
-              className="border-[#C65D00] text-primary hover:bg-background"
+              className="border-primary text-primary hover:bg-muted"
+            >
+              <a href="chrome://extensions" target="_blank" rel="noopener noreferrer">
+                <Icon name="link-external" size={14} />
+                Open chrome://extensions
+              </a>
+            </Button>
+            <Button
+              asChild
+              variant="ghost"
+              className="text-muted-foreground hover:text-primary"
             >
               <a href="/aply-extension/README.md" target="_blank" rel="noopener noreferrer">
                 <Icon name="book" size={14} />

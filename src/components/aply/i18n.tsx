@@ -31,20 +31,20 @@ const en: Dict = {
   "header.language": "Language",
 
   // Hero
-  "hero.badge": "GLM-4.6 · local-first · EN · FR · DE",
+  "hero.badge": "Local-first · 24/7 monitoring · Authentic drafts",
   "hero.title.1": "Apply to every job that fits.",
   "hero.title.2": "Aply writes, you approve.",
   "hero.subtitle":
-    "Aply watches 190+ job boards 24/7, drafts authentic cover letters with GLM in EN/FR/DE, and asks for your green light by WhatsApp or email before every single submission.",
+    "Aply watches 190+ job boards around the clock, drafts authentic cover letters in your voice, and asks for your green light by WhatsApp or email before every single submission.",
   "hero.stat.platforms": "Platforms monitored",
   "hero.stat.pending": "Pending approvals",
   "hero.stat.offers": "Offers detected",
   "hero.stat.submitted": "Submitted",
   "hero.stat.actionNeeded": "Action needed",
   "hero.step1.title": "Aply scans",
-  "hero.step1.subtitle": "190+ job boards, 24/7, in EN · FR · DE",
+  "hero.step1.subtitle": "190+ job boards, 24/7, auto-discovery",
   "hero.step2.title": "Aply drafts",
-  "hero.step2.subtitle": "Authentic cover letters with GLM, in your voice",
+  "hero.step2.subtitle": "Authentic cover letters in your own voice",
   "hero.step3.title": "You approve",
   "hero.step3.subtitle": "WhatsApp or email · one tap per application",
 
@@ -94,7 +94,7 @@ const en: Dict = {
   "platforms.eyebrow": "Sources",
   "platforms.title": "Monitored platforms",
   "platforms.subtitle": "Every site Aply watches, 24/7.",
-  "platforms.subtitleSuffix": "platforms · 24/7 scanning · EN · FR · DE",
+  "platforms.subtitleSuffix": "platforms · 24/7 scanning",
   "platforms.search": "Search platforms by name…",
   "platforms.category.all": "All categories",
   "platforms.category.generalist": "Generalist",
@@ -300,7 +300,7 @@ const en: Dict = {
   "approvals.toast.loadFailed": "Failed to load pending approvals",
   "approvals.toast.approved": "Approved & submitted",
   "approvals.toast.rejected": "Rejected · Aply will skip this one",
-  "approvals.toast.regenLoading": "Regenerating with GLM… (~15s)",
+  "approvals.toast.regenLoading": "Regenerating draft… (~15s)",
   "approvals.toast.regenReady": "New draft ready · quality {percent}%",
   "approvals.toast.emailed": "Approval request emailed",
   "approvals.toast.whatsapped": "WhatsApp sent",
@@ -312,7 +312,7 @@ const en: Dict = {
   "footer.rights": "© 2025 Aply",
   "footer.disclaimer":
     "Aply is a personal automation tool. Respect each platform's Terms of Service.",
-  "footer.poweredBy": "Powered by GLM-4.6 · Next.js 16 · Prisma · Octicons",
+  "footer.poweredBy": "Next.js 16 · Prisma · Local-first",
   "footer.localOnly": "Local-only · no data leaves your machine",
 
   // Command palette
@@ -422,20 +422,20 @@ const fr: Dict = {
   "header.activity": "Activité",
   "header.language": "Langue",
 
-  "hero.badge": "GLM-4.6 · local · EN · FR · DE",
+  "hero.badge": "Local · Surveillance 24/7 · Brouillons authentiques",
   "hero.title.1": "Postulez à chaque offre qui colle.",
   "hero.title.2": "Aply écrit, vous validez.",
   "hero.subtitle":
-    "Aply surveille 190+ sites d'emploi 24h/24, rédige des lettres de motivation authentiques avec GLM en EN/FR/DE, et demande votre feu vert par WhatsApp ou email avant chaque envoi.",
+    "Aply surveille 190+ sites d'emploi 24h/24, redige des lettres authentiques a votre voix, et demande votre feu vert par WhatsApp ou email avant chaque envoi.",
   "hero.stat.platforms": "Plateformes surveillées",
   "hero.stat.pending": "Validations en attente",
   "hero.stat.offers": "Offres détectées",
   "hero.stat.submitted": "Candidatures envoyées",
   "hero.stat.actionNeeded": "Action requise",
   "hero.step1.title": "Aply scanne",
-  "hero.step1.subtitle": "190+ sites, 24h/24, en EN · FR · DE",
+  "hero.step1.subtitle": "190+ sites, 24h/24, decouverte auto",
   "hero.step2.title": "Aply rédige",
-  "hero.step2.subtitle": "Des lettres authentiques avec GLM, à votre voix",
+  "hero.step2.subtitle": "Des lettres authentiques a votre voix",
   "hero.step3.title": "Vous validez",
   "hero.step3.subtitle": "WhatsApp ou email · un tap par candidature",
 
@@ -482,7 +482,7 @@ const fr: Dict = {
   "platforms.eyebrow": "Sources",
   "platforms.title": "Plateformes surveillées",
   "platforms.subtitle": "Chaque site qu'Aply surveille, 24h/24.",
-  "platforms.subtitleSuffix": "plateformes · scan 24h/24 · EN · FR · DE",
+  "platforms.subtitleSuffix": "plateformes · scan 24h/24",
   "platforms.search": "Rechercher par nom…",
   "platforms.category.all": "Toutes catégories",
   "platforms.category.generalist": "Généraliste",
@@ -682,7 +682,7 @@ const fr: Dict = {
   "approvals.toast.loadFailed": "Échec du chargement des validations",
   "approvals.toast.approved": "Validée et envoyée",
   "approvals.toast.rejected": "Rejetée · Aply passera à la suivante",
-  "approvals.toast.regenLoading": "Régénération avec GLM… (~15s)",
+  "approvals.toast.regenLoading": "Regeneration du brouillon… (~15s)",
   "approvals.toast.regenReady": "Nouveau brouillon prêt · qualité {percent} %",
   "approvals.toast.emailed": "Demande de validation envoyée par email",
   "approvals.toast.whatsapped": "WhatsApp envoyé",
@@ -693,7 +693,7 @@ const fr: Dict = {
   "footer.rights": "© 2025 Aply",
   "footer.disclaimer":
     "Aply est un outil d'automatisation personnel. Respectez les CGU de chaque plateforme.",
-  "footer.poweredBy": "Propulsé par GLM-4.6 · Next.js 16 · Prisma · Octicons",
+  "footer.poweredBy": "Next.js 16 · Prisma · Local",
   "footer.localOnly": "Local uniquement · aucune donnée ne quitte votre machine",
 
   // Command palette
@@ -802,20 +802,20 @@ const de: Dict = {
   "header.activity": "Aktivität",
   "header.language": "Sprache",
 
-  "hero.badge": "GLM-4.6 · lokal · EN · FR · DE",
+  "hero.badge": "Lokal · 24/7 Uberwachung · Authentische Entwurfe",
   "hero.title.1": "Bewirb dich auf jeden passenden Job.",
   "hero.title.2": "Aply schreibt, du stimmst zu.",
   "hero.subtitle":
-    "Aply überwacht 190+ Job-Börsen rund um die Uhr, verfasst authentische Anschreiben mit GLM in EN/FR/DE und fragt dein Go per WhatsApp oder E-Mail vor jeder Bewerbung ab.",
+    "Aply uberwacht 190+ Job-Borsen rund um die Uhr, verfasst authentische Anschreiben in deiner Stimme und fragt dein Go per WhatsApp oder E-Mail vor jeder Bewerbung ab.",
   "hero.stat.platforms": "Überwachte Plattformen",
   "hero.stat.pending": "Offene Freigaben",
   "hero.stat.offers": "Erkannte Angebote",
   "hero.stat.submitted": "Eingereicht",
   "hero.stat.actionNeeded": "Aktion erforderlich",
   "hero.step1.title": "Aply scannt",
-  "hero.step1.subtitle": "190+ Job-Börsen, 24/7, in EN · FR · DE",
+  "hero.step1.subtitle": "190+ Job-Borsen, 24/7, Auto-Entdeckung",
   "hero.step2.title": "Aply verfasst",
-  "hero.step2.subtitle": "Authentische Anschreiben mit GLM, in deiner Stimme",
+  "hero.step2.subtitle": "Authentische Anschreiben in deiner Stimme",
   "hero.step3.title": "Du stimmst zu",
   "hero.step3.subtitle": "WhatsApp oder E-Mail · ein Tippen pro Bewerbung",
 
@@ -1073,7 +1073,7 @@ const de: Dict = {
   "footer.rights": "© 2025 Aply",
   "footer.disclaimer":
     "Aply ist ein persönliches Automatisierungstool. Respektiere die AGB jeder Plattform.",
-  "footer.poweredBy": "Betrieben mit GLM-4.6 · Next.js 16 · Prisma · Octicons",
+  "footer.poweredBy": "Next.js 16 · Prisma · Lokal",
   "footer.localOnly": "Nur lokal · keine Daten verlassen deinen Rechner",
 
   // Command palette

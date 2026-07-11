@@ -1,7 +1,7 @@
 "use client";
 /**
- * OnboardingBanner · dismissible welcome banner shown to first-time users.
- * Persists dismissal in localStorage. Highlights the 3 key actions.
+ * OnboardingBanner - dismissible welcome banner.
+ * Clean design: gradient background, no card, inline steps.
  */
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -33,24 +33,9 @@ export function OnboardingBanner() {
   };
 
   const steps = [
-    {
-      icon: "gear",
-      title: t("onboarding.step1.title"),
-      desc: t("onboarding.step1.desc"),
-      href: "#settings",
-    },
-    {
-      icon: "rocket",
-      title: t("onboarding.step2.title"),
-      desc: t("onboarding.step2.desc"),
-      href: "#extension",
-    },
-    {
-      icon: "sync",
-      title: t("onboarding.step3.title"),
-      desc: t("onboarding.step3.desc"),
-      href: "#monitoring",
-    },
+    { icon: "gear", title: t("onboarding.step1.title"), desc: t("onboarding.step1.desc"), href: "#settings" },
+    { icon: "rocket", title: t("onboarding.step2.title"), desc: t("onboarding.step2.desc"), href: "#extension" },
+    { icon: "sync", title: t("onboarding.step3.title"), desc: t("onboarding.step3.desc"), href: "#monitoring" },
   ];
 
   return (
@@ -61,19 +46,17 @@ export function OnboardingBanner() {
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
-          className="overflow-hidden border-b border-border bg-gradient-to-r from-[#FF9F1C]/15 via-[#FFF4DC] to-[#C65D00]/10 dark:border-[#5A3D26] dark:from-[#FF9F1C]/10 dark:via-[#3A2417] dark:to-[#C65D00]/15"
+          className="overflow-hidden border-b border-border bg-gradient-to-r from-primary/8 via-card to-accent/8"
         >
-          <div className="mx-auto w-full max-w-7xl px-4 py-4 md:px-6">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-start gap-3">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
-                  <Icon name="rocket" size={18} />
-                </span>
+          <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">👋</span>
                 <div>
-                  <h2 className="font-heading text-base font-semibold text-foreground dark:text-primary-foreground">
+                  <p className="text-sm font-medium text-foreground">
                     {t("onboarding.title")}
-                  </h2>
-                  <p className="text-sm text-muted-foreground dark:text-[#C9B89F]">
+                  </p>
+                  <p className="text-xs text-muted-foreground">
                     {t("onboarding.desc")}
                   </p>
                 </div>
@@ -84,15 +67,13 @@ export function OnboardingBanner() {
                   <a
                     key={i}
                     href={s.href}
-                    className="group flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-1.5 text-xs transition-all hover:border-[#C65D00] hover:shadow-sm dark:border-[#5A3D26] dark:bg-[#4A2F1A]"
+                    className="group flex items-center gap-2 rounded-lg bg-background/60 px-3 py-1.5 text-xs transition-all hover:bg-background"
                   >
-                    <span className="flex h-6 w-6 items-center justify-center rounded-md bg-background text-primary dark:bg-[#3A2417]">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10 text-primary">
                       <Icon name={s.icon} size={12} />
                     </span>
-                    <span className="hidden text-foreground dark:text-primary-foreground sm:inline">
-                      {s.title}
-                    </span>
-                    <span className="text-muted-foreground dark:text-[#C9B89F]">
+                    <span className="text-foreground">{s.title}</span>
+                    <span className="hidden text-muted-foreground sm:inline">
                       {s.desc}
                     </span>
                   </a>
@@ -100,7 +81,7 @@ export function OnboardingBanner() {
                 <button
                   onClick={dismiss}
                   aria-label={t("onboarding.dismiss")}
-                  className="ml-1 flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-primary dark:hover:bg-[#4A2F1A]"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <Icon name="x" size={14} />
                 </button>
