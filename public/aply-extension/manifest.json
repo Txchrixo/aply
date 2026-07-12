@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Aply · Auto-Application Agent",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Capture job offers with a right-click, auto-fill application forms, and let Aply draft authentic cover letters with GLM. FR · EN · DE.",
   "default_locale": "en",
   "permissions": [

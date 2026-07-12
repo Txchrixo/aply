@@ -2,42 +2,39 @@
 
 ## Install locally (developer mode)
 
-1. Open Chrome and go to `chrome://extensions`
-2. Toggle **Developer mode** ON (top-right)
-3. Click **Load unpacked**
-4. Select this `aply-extension/` folder
-5. The Aply icon appears in your toolbar.
+1. Open Chrome → `chrome://extensions`
+2. Enable **Developer mode**
+3. **Load unpacked** → select this `aply-extension/` folder
+   (or download a fresh ZIP from the dashboard and unzip first)
+4. Pin the Aply icon in the toolbar
 
-## How to use
+## Sign in
 
-### Capture a job offer
-1. Browse any job board (Indeed, LinkedIn, Welcome to the Jungle, …)
-2. Open the job offer page you want to apply to
-3. **Right-click** anywhere on the page → **Aply: capture this job offer**
-4. Aply sends the page to your local dashboard (`http://localhost:3000`),
-   extracts the structured fields with GLM, and drafts a cover letter.
+1. Click the Aply icon
+2. Enter any demo email + password (4+ chars)
+3. Set Dashboard URL (default `http://localhost:4000`)
+4. The popup becomes a mini dashboard once connected
 
-### Auto-fill an application form
-1. Open the application form page on the job board
-2. **Right-click** → **Aply: auto-fill this application form**
-3. Aply detects input fields, asks the dashboard for values, and fills them.
-4. Aply NEVER submits on its own · review and submit yourself, or approve via
-   the dashboard / WhatsApp / email.
+## What you can do
 
-## Options
-Click the extension icon → **Options** to set:
-- Dashboard URL (default `http://localhost:3000`)
-- WhatsApp number for approval requests
-- Email for approval requests
+| Action | Where |
+|--------|--------|
+| Capture job offer + draft cover letter | Popup **Capture page** or right-click → *Aply: capture* |
+| Auto-fill application forms | Popup **Fill form** or right-click → *Aply: auto-fill* |
+| Approve / reject pending drafts | Popup approvals list |
+| Open full dashboard | Popup **Open dashboard** |
+| Change backend URL | Right-click icon → Options |
 
-## Permissions explained
-- `contextMenus` · the right-click "Aply" entries
-- `activeTab` + `scripting` · read the page text / fill the form on the active tab
-- `storage` · save your options
-- `notifications` · confirm captures
-- `<all_urls>` host permission · Aply must work on every job board
+## Requirements
 
-## Notes
-- The dashboard (Next.js app on port 3000) must be running.
-- For sites behind login (LinkedIn, Welcome to the Jungle, …), simply be logged
-  in in your Chrome · Aply reuses your session cookies.
+- Aply Next.js dashboard running (default port **4000**)
+- A default resume uploaded in the dashboard (needed for drafts + fill)
+- For logged-in job boards (LinkedIn, WTTJ…), stay logged in in Chrome — Aply reuses your session
+
+## Permissions
+
+- `contextMenus` · right-click actions
+- `activeTab` + `scripting` · read page / fill fields
+- `storage` · session token + options
+- `notifications` · capture confirmations
+- `<all_urls>` · works on every job board

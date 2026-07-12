@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Aply · Auto-Application Agent",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Capture job offers with a right-click, auto-fill application forms, and let Aply draft authentic cover letters.",
+    "description": "Extension description"
+  }
+}

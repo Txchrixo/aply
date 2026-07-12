@@ -4,154 +4,393 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Aply</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,550;9..144,650&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --bg: #FFE4B5;
-        --fg: #4A2F1A;
-        --muted: #79695E;
-        --primary: #C65D00;
-        --accent: #FF9F1C;
-        --border: #E5D5B5;
-        --card: #FFF4DC;
+        --bg: #f6e4c4;
+        --bg-deep: #edd6a8;
+        --fg: #3d2716;
+        --muted: #7a6554;
+        --primary: #b85400;
+        --primary-fg: #fff4e4;
+        --line: #e0c79a;
+        --surface: #fff1d8;
+        --ok: #2f7a3e;
+        --bad: #a33a22;
       }
+
       * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      html {
+        background: transparent;
+      }
+
       body {
-        width: 320px;
-        font-family: -apple-system, system-ui, sans-serif;
-        background: var(--bg);
+        width: 340px;
+        max-height: 540px;
+        overflow: hidden;
         color: var(--fg);
+        font-family: "Source Sans 3", system-ui, sans-serif;
+        font-size: 13px;
+        line-height: 1.4;
+        background:
+          linear-gradient(165deg, #f8e8cb 0%, var(--bg) 42%, var(--bg-deep) 100%);
+        border-radius: 14px;
       }
-      .header {
-        padding: 14px 16px 10px;
-        border-bottom: 1px solid var(--border);
+
+      .hidden { display: none !important; }
+
+      .wordmark {
+        font-family: "Fraunces", Georgia, serif;
+        font-weight: 650;
+        font-size: 22px;
+        letter-spacing: -0.03em;
+        color: var(--fg);
+        line-height: 1;
       }
-      .header-row {
+
+      .shell {
+        display: flex;
+        flex-direction: column;
+        max-height: 540px;
+      }
+
+      .top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 18px 12px;
+      }
+
+      .top-meta {
         display: flex;
         align-items: center;
         gap: 10px;
+        font-size: 12px;
+        color: var(--muted);
       }
-      .logo {
-        width: 32px;
-        height: 32px;
-        border-radius: 8px;
-        background: var(--card);
-        display: flex;
+
+      .conn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .conn::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--ok);
+      }
+
+      .conn.is-off::before { background: var(--bad); }
+
+      .linkish {
+        border: 0;
+        background: none;
+        color: var(--muted);
+        font: inherit;
+        font-size: 12px;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+      }
+      .linkish:hover { color: var(--fg); }
+
+      .panel {
+        padding: 0 18px 18px;
+        overflow-y: auto;
+        flex: 1;
+        scrollbar-width: thin;
+        scrollbar-color: #c9ad7d transparent;
+      }
+
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        margin: 0 0 16px;
+      }
+
+      .metric {
+        padding: 12px 0;
+        text-align: left;
+      }
+
+      .metric + .metric {
+        padding-left: 12px;
+        border-left: 1px solid var(--line);
+      }
+
+      .metric b {
+        display: block;
+        font-family: "Fraunces", Georgia, serif;
+        font-size: 20px;
+        font-weight: 550;
+        letter-spacing: -0.02em;
+        line-height: 1;
+      }
+
+      .metric span {
+        display: block;
+        margin-top: 4px;
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .label {
+        margin: 0 0 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .btn {
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
-      }
-      h1 { font-size: 16px; font-weight: 600; }
-      .tagline { font-size: 11px; color: var(--muted); margin-top: 1px; }
-      .body { padding: 12px 16px; }
-      .stat {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--border);
-      }
-      .stat:last-child { border-bottom: 0; }
-      .stat-label { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
-      .stat-value { font-size: 16px; font-weight: 600; }
-      .dot {
-        display: inline-block;
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-      }
-      .dot-green { background: #2ea043; }
-      .dot-orange { background: var(--primary); }
-      .btn {
-        display: block;
-        width: 100%;
-        background: var(--primary);
-        color: var(--bg);
-        border: 0;
+        min-height: 36px;
+        padding: 0 12px;
+        border: 1px solid transparent;
         border-radius: 8px;
-        padding: 10px;
+        font: inherit;
         font-size: 13px;
         font-weight: 500;
         cursor: pointer;
-        margin-top: 12px;
         text-decoration: none;
-        text-align: center;
+        color: inherit;
+        transition: background 0.12s ease, border-color 0.12s ease;
       }
-      .btn:hover { background: var(--accent); }
-      .btn-outline {
+      .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+      .btn-primary {
+        background: var(--primary);
+        color: var(--primary-fg);
+      }
+      .btn-primary:hover:not(:disabled) { background: #9e4800; }
+      .btn-secondary {
         background: transparent;
-        color: var(--primary);
-        border: 1px solid var(--primary);
+        border-color: var(--line);
+        color: var(--fg);
       }
-      .btn-outline:hover { background: var(--card); }
-      .hint { font-size: 11px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
-      .divider { height: 1px; background: var(--border); margin: 10px 0; }
-      .actions { display: flex; gap: 8px; }
-      .actions .btn { flex: 1; margin-top: 0; }
+      .btn-secondary:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--surface) 70%, transparent);
+      }
+      .btn-full { width: 100%; }
+      .btn-tiny {
+        min-height: 30px;
+        padding: 0 10px;
+        font-size: 12px;
+        border-radius: 6px;
+      }
+      .btn-quiet {
+        background: transparent;
+        border: 0;
+        color: var(--bad);
+        min-height: 30px;
+        padding: 0 8px;
+        font-size: 12px;
+      }
+      .btn-quiet:hover { text-decoration: underline; }
+
+      .list { display: flex; flex-direction: column; gap: 0; }
+
+      .item {
+        padding: 12px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .item-title {
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.3;
+      }
+
+      .item-meta {
+        margin-top: 2px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .item-preview {
+        margin-top: 8px;
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.45;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+
+      .item-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .score {
+        margin-left: auto;
+        font-size: 12px;
+        color: var(--ok);
+        font-weight: 600;
+      }
+
+      .empty {
+        padding: 14px 0;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .toast {
+        margin-top: 12px;
+        padding: 10px 0 0;
+        border-top: 1px solid var(--line);
+        font-size: 12px;
+        color: var(--fg);
+      }
+      .toast.error { color: var(--bad); }
+
+      .foot {
+        margin-top: 14px;
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      /* Login */
+      .login {
+        padding: 22px 20px 24px;
+      }
+
+      .login .wordmark {
+        font-size: 28px;
+        margin-bottom: 18px;
+      }
+
+      .login h1 {
+        font-family: "Fraunces", Georgia, serif;
+        font-size: 18px;
+        font-weight: 550;
+        letter-spacing: -0.02em;
+        margin-bottom: 4px;
+      }
+
+      .login > p {
+        color: var(--muted);
+        font-size: 12px;
+        margin-bottom: 16px;
+      }
+
+      label {
+        display: block;
+        margin: 12px 0 5px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      input {
+        width: 100%;
+        height: 38px;
+        padding: 0 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--surface);
+        color: var(--fg);
+        font: inherit;
+        font-size: 13px;
+      }
+      input:focus {
+        outline: none;
+        border-color: color-mix(in srgb, var(--primary) 55%, var(--line));
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 16%, transparent);
+      }
+
+      .login .btn { margin-top: 16px; }
+
+      .hint {
+        margin-top: 14px;
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.45;
+      }
     </style>
   </head>
   <body>
-    <div class="header">
-      <div class="header-row">
-        <div class="logo">🚀</div>
-        <div>
-          <h1>Aply</h1>
-          <div class="tagline">Auto-application agent</div>
+    <div id="view-login" class="login hidden">
+      <div class="wordmark">Aply</div>
+      <h1>Sign in</h1>
+      <p>Connect to your local dashboard.</p>
+      <form id="login-form">
+        <label for="email">Email</label>
+        <input id="email" type="email" autocomplete="username" placeholder="you@example.com" required />
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" required minlength="4" />
+        <label for="dashboard">Dashboard URL</label>
+        <input id="dashboard" type="url" placeholder="http://localhost:4000" />
+        <button class="btn btn-primary btn-full" type="submit" id="login-btn">Sign in</button>
+      </form>
+      <p class="hint">Same credentials as the web app. Demo: any email + password (4+ characters).</p>
+      <div id="login-toast" class="toast error hidden"></div>
+    </div>
+
+    <div id="view-app" class="shell hidden">
+      <div class="top">
+        <div class="wordmark">Aply</div>
+        <div class="top-meta">
+          <span class="conn" id="conn-pill"><span id="conn-text">Live</span></span>
+          <button class="linkish" id="logout-btn" type="button">Sign out</button>
         </div>
       </div>
+
+      <div class="panel">
+        <div class="metrics">
+          <div class="metric">
+            <b id="stat-pending">—</b>
+            <span>Pending</span>
+          </div>
+          <div class="metric">
+            <b id="stat-offers">—</b>
+            <span>Offers</span>
+          </div>
+          <div class="metric">
+            <b id="stat-submitted">—</b>
+            <span>Submitted</span>
+          </div>
+        </div>
+
+        <div class="label">Actions</div>
+        <div class="row">
+          <button class="btn btn-primary" id="capture-btn" type="button">Capture page</button>
+          <button class="btn btn-secondary" id="fill-btn" type="button">Fill form</button>
+          <a class="btn btn-secondary" id="dashboard-link" href="#" target="_blank">Dashboard</a>
+          <button class="btn btn-secondary" id="refresh-btn" type="button">Refresh</button>
+        </div>
+
+        <div class="label">
+          Waiting for approval
+          <span id="pending-count"></span>
+        </div>
+        <div id="approvals" class="list"></div>
+
+        <div id="app-toast" class="toast hidden"></div>
+        <p class="foot">Right-click a job page to capture, or an application form to auto-fill.</p>
+      </div>
     </div>
 
-    <div class="body">
-      <div class="stat">
-        <span class="stat-label"><span class="dot dot-green"></span>Monitoring</span>
-        <span class="stat-value" id="mon">-</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label"><span class="dot dot-orange"></span>Pending</span>
-        <span class="stat-value" id="pend">-</span>
-      </div>
-      <div class="stat">
-        <span class="stat-label">Submitted</span>
-        <span class="stat-value" id="sub">-</span>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="actions">
-        <a class="btn" href="http://localhost:3000" target="_blank">Dashboard</a>
-        <button class="btn btn-outline" id="fillBtn">Fill form</button>
-      </div>
-
-      <p class="hint">
-        Right-click any job page: "Aply: capture this job offer"<br>
-        Right-click any application form: "Aply: auto-fill this form"
-      </p>
-    </div>
-
-    <script>
-      fetch("http://localhost:3000/api/stats")
-        .then((r) => r.json())
-        .then((s) => {
-          document.getElementById("mon").textContent = s.monitoringEnabled ? "Active" : "Paused";
-          document.getElementById("pend").textContent = s.pendingApprovals;
-          document.getElementById("sub").textContent = s.submittedTotal;
-        })
-        .catch(() => {
-          document.getElementById("mon").textContent = "Offline";
-        });
-
-      document.getElementById("fillBtn").addEventListener("click", () => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          if (tabs[0]) {
-            chrome.tabs.sendMessage(tabs[0].id, { type: "APLY_FILL_FORM" }, (resp) => {
-              if (resp?.ok) {
-                alert("Filled " + resp.filled + " fields");
-              } else {
-                alert("Could not fill: " + (resp?.error || "unknown"));
-              }
-            });
-          }
-        });
-      });
-    </script>
+    <script type="module" src="popup.js"></script>
   </body>
 </html>

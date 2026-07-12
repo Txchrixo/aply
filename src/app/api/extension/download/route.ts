@@ -4,20 +4,34 @@
  * Uses Node's built-in zlib + a minimal ZIP builder (no external deps).
  */
 import { NextResponse } from "next/server";
-import { readFile } from "fs/promises";
-import { join } from "path";
+import { readFile, readdir, stat } from "fs/promises";
+import { join, relative, sep } from "path";
 import { deflateRawSync } from "zlib";
 
 const EXTENSION_DIR = join(process.cwd(), "public", "aply-extension");
 
-const FILES_TO_INCLUDE = [
-  "manifest.json",
-  "background.js",
-  "content.js",
-  "popup.html",
-  "options.html",
-  "README.md",
-];
+/** Files that must not ship inside the unpacked extension ZIP. */
+const SKIP_NAMES = new Set(["generate-icons.js", ".DS_Store", "Thumbs.db"]);
+
+async function collectFiles(dir: string, base = dir): Promise<Array<{ name: string; data: Buffer }>> {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const files: Array<{ name: string; data: Buffer }> = [];
+
+  for (const entry of entries) {
+    if (SKIP_NAMES.has(entry.name) || entry.name.startsWith(".")) continue;
+    const fullPath = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...(await collectFiles(fullPath, base)));
+      continue;
+    }
+    const info = await stat(fullPath);
+    if (!info.isFile()) continue;
+    const rel = relative(base, fullPath).split(sep).join("/");
+    files.push({ name: rel, data: await readFile(fullPath) });
+  }
+
+  return files;
+}
 
 // Minimal ZIP file builder (no external dependency)
 // ZIP format: https://en.wikipedia.org/wiki/ZIP_(file_format)
@@ -113,14 +127,19 @@ function crc32(buf: Buffer): number {
 
 export async function GET() {
   try {
-    const files: Array<{ name: string; data: Buffer }> = [];
-    for (const name of FILES_TO_INCLUDE) {
-      try {
-        const data = await readFile(join(EXTENSION_DIR, name));
-        files.push({ name, data });
-      } catch {
-        // skip missing files
-      }
+    const files = await collectFiles(EXTENSION_DIR);
+    if (files.length === 0) {
+      return NextResponse.json({ error: "Extension files not found" }, { status: 404 });
+    }
+
+    const required = ["manifest.json", "icons/icon-16.png", "icons/icon-48.png", "icons/icon-128.png"];
+    const names = new Set(files.map((f) => f.name));
+    const missing = required.filter((r) => !names.has(r));
+    if (missing.length > 0) {
+      return NextResponse.json(
+        { error: `Extension package incomplete: missing ${missing.join(", ")}` },
+        { status: 500 }
+      );
     }
 
     const zip = createZip(files);

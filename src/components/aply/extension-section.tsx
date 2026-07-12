@@ -38,7 +38,7 @@ export function ExtensionSection() {
     <section
       id="extension"
       aria-labelledby="extension-heading"
-      className="bg-card/60 px-4 py-16 md:px-6 md:py-20"
+      className="aply-panel px-0 py-0"
     >
       <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 lg:grid-cols-2 lg:items-center">
         {/* Left: copy + install steps */}

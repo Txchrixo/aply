@@ -150,7 +150,7 @@
   }
 
   // Fill a single field with a value, properly triggering events
-  function fillField(el, value) {
+  function fillField(el, value, filePayload) {
     const tagName = el.tagName.toLowerCase();
 
     if (tagName === "textarea") {
@@ -164,10 +164,27 @@
     } else if (el.getAttribute("type") === "checkbox" || el.getAttribute("type") === "radio") {
       el.checked = true;
     } else if (el.getAttribute("type") === "file") {
-      // File inputs can't be set programmatically - trigger a click to open the file dialog
-      console.log("%c[Aply] File input detected - click to upload your resume", "color:#C65D00");
-      el.click();
-      return false;
+      if (!filePayload?.base64) {
+        console.log("%c[Aply] Resume file missing — upload a PDF in the dashboard", "color:#C65D00");
+        return false;
+      }
+      try {
+        const binary = atob(filePayload.base64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        const file = new File([bytes], filePayload.fileName || "resume.pdf", {
+          type: filePayload.mimeType || "application/pdf",
+        });
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        el.files = dt.files;
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+        return true;
+      } catch (err) {
+        console.warn("[Aply] Could not set resume file input", err);
+        return false;
+      }
     } else {
       const setter = Object.getOwnPropertyDescriptor(
         window.HTMLInputElement.prototype,
@@ -211,12 +228,20 @@
         }
       }
 
+      if (!el && v.file) {
+        try {
+          el = document.querySelector("input[type='file']");
+        } catch {
+          el = null;
+        }
+      }
+
       if (!el) {
         skipped++;
         return;
       }
 
-      if (fillField(el, v.value)) {
+      if (fillField(el, v.value, v.file)) {
         filled++;
       } else {
         skipped++;
