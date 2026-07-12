@@ -11,21 +11,21 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       position="bottom-right"
+      gap={10}
+      visibleToasts={5}
       toastOptions={{
-        style: {
-          background: "var(--card)",
-          color: "var(--foreground)",
-          border: "1px solid var(--border)",
-          borderRadius: "12px",
-          fontSize: "14px",
-          fontFamily: "var(--font-body)",
-        },
+        unstyled: false,
         classNames: {
-          title: "text-foreground font-medium",
-          description: "text-muted-foreground",
-          success: "text-foreground",
-          error: "text-foreground",
-          loading: "text-foreground",
+          toast: "aply-toast",
+          title: "aply-toast-title",
+          description: "aply-toast-desc",
+          success: "aply-toast-success",
+          error: "aply-toast-error",
+          info: "aply-toast-info",
+          warning: "aply-toast-warning",
+          loading: "aply-toast-loading",
+          closeButton: "aply-toast-close",
+          icon: "aply-toast-icon",
         },
       }}
       style={
@@ -33,6 +33,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
           "--normal-bg": "var(--card)",
           "--normal-text": "var(--foreground)",
           "--normal-border": "var(--border)",
+          "--success-bg": "var(--card)",
+          "--success-text": "var(--foreground)",
+          "--success-border": "var(--border)",
+          "--error-bg": "var(--card)",
+          "--error-text": "var(--foreground)",
+          "--error-border": "var(--border)",
         } as React.CSSProperties
       }
       {...props}
