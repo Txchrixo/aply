@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Icon } from "@/components/aply/icon";
 import { useI18n } from "@/components/aply/i18n";
+import { useDashNav, type DashView } from "@/components/aply/dashboard-nav";
 
 interface Shortcut {
   keys: string[];
@@ -39,6 +40,7 @@ interface KeyboardShortcutsHelpProps {
 
 export function KeyboardShortcutsHelp({ onScan }: KeyboardShortcutsHelpProps) {
   const { t } = useI18n();
+  const { setView } = useDashNav();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -46,7 +48,6 @@ export function KeyboardShortcutsHelp({ onScan }: KeyboardShortcutsHelpProps) {
     let lastKeyTime = 0;
 
     const handler = (e: KeyboardEvent) => {
-      // Don't trigger when typing in inputs/textareas
       const target = e.target as HTMLElement;
       if (
         target.tagName === "INPUT" ||
@@ -57,47 +58,45 @@ export function KeyboardShortcutsHelp({ onScan }: KeyboardShortcutsHelpProps) {
         return;
       }
 
-      // "?" opens help
       if (e.key === "?" && !e.metaKey && !e.ctrlKey && !e.altKey) {
         e.preventDefault();
         setOpen((o) => !o);
         return;
       }
 
-      // "S" triggers scan (single key, no modifier)
       if (e.key.toLowerCase() === "s" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        if (lastKey === "g" && Date.now() - lastKeyTime < 800) {
+          e.preventDefault();
+          setView("settings");
+          lastKey = "";
+          return;
+        }
         e.preventDefault();
         onScan();
         return;
       }
 
-      // "G" + letter navigation (vim-style)
       if (e.key.toLowerCase() === "g" && !e.metaKey && !e.ctrlKey && !e.altKey) {
-        const now = Date.now();
-        if (now - lastKeyTime < 800 && lastKey === "g") {
-          // Double g · not used, but prevent default
-          lastKey = "";
-          return;
-        }
         lastKey = "g";
-        lastKeyTime = now;
+        lastKeyTime = Date.now();
         return;
       }
 
-      // If last key was "g", check for second key
       if (lastKey === "g" && Date.now() - lastKeyTime < 800) {
-        const map: Record<string, string> = {
-          m: "monitoring",
+        const map: Record<string, DashView> = {
+          m: "overview",
           a: "approvals",
           p: "platforms",
           h: "history",
-          s: "settings",
           e: "extension",
+          r: "resume",
+          t: "training",
+          n: "analytics",
         };
-        const target = map[e.key.toLowerCase()];
-        if (target) {
+        const view = map[e.key.toLowerCase()];
+        if (view) {
           e.preventDefault();
-          document.getElementById(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
+          setView(view);
         }
         lastKey = "";
       }
@@ -105,7 +104,7 @@ export function KeyboardShortcutsHelp({ onScan }: KeyboardShortcutsHelpProps) {
 
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [onScan]);
+  }, [onScan, setView]);
 
   const globalShortcuts = SHORTCUTS.filter((s) => s.group === "global");
   const navShortcuts = SHORTCUTS.filter((s) => s.group === "navigation");

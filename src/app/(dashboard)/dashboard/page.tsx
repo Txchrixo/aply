@@ -1,17 +1,15 @@
 "use client";
 /**
- * Aply dashboard · single page assembling every section.
- * Wraps everything in min-h-screen flex flex-col so the footer sticks.
- * I18nProvider gives every section access to the current locale + t().
- * CommandPalette provides Cmd/Ctrl+K global search & navigation.
- * AutoScan keeps monitoring running on the configured interval.
+ * Aply dashboard · app shell with panel views (not a marketing scroll page).
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { I18nProvider } from "@/components/aply/i18n";
-import { AplyHeader } from "@/components/aply/header";
-import { Hero } from "@/components/aply/hero";
+import { DashboardShell } from "@/components/aply/dashboard-shell";
+import { DashboardOverviewBar } from "@/components/aply/dashboard-overview-bar";
+import { useDashNav } from "@/components/aply/dashboard-nav";
 import { MonitoringSection } from "@/components/aply/monitoring-section";
 import { ApprovalsSection } from "@/components/aply/approvals-section";
+import { OffersSection } from "@/components/aply/offers-section";
 import { PlatformsSection } from "@/components/aply/platforms-section";
 import { HistorySection } from "@/components/aply/history-section";
 import { AnalyticsSection } from "@/components/aply/analytics-section";
@@ -19,8 +17,6 @@ import { TrainingSection } from "@/components/aply/training-section";
 import { ResumeSection } from "@/components/aply/resume-section";
 import { SettingsSection } from "@/components/aply/settings-section";
 import { ExtensionSection } from "@/components/aply/extension-section";
-import { AplyFooter } from "@/components/aply/footer";
-import { MobileNav } from "@/components/aply/mobile-nav";
 import { CommandPalette } from "@/components/aply/command-palette";
 import { KeyboardShortcutsHelp } from "@/components/aply/keyboard-shortcuts-help";
 import { OnboardingBanner } from "@/components/aply/onboarding-banner";
@@ -28,11 +24,62 @@ import type { Settings, Stats } from "@/components/aply/types";
 import { apiFetch } from "@/components/aply/utils";
 import { toast } from "sonner";
 
-export default function Home() {
+function DashboardViews({
+  stats,
+  settings,
+  loading,
+  scanTick,
+  onSettingsChange,
+  onApprove,
+  onScan,
+}: {
+  stats: Stats | null;
+  settings: Settings | null;
+  loading: boolean;
+  scanTick: number;
+  onSettingsChange: (s: Partial<Settings>) => Promise<Settings>;
+  onApprove: () => void;
+  onScan: () => void;
+}) {
+  const { view } = useDashNav();
+
+  return (
+    <>
+      {view === "overview" && (
+        <div className="space-y-4">
+          <DashboardOverviewBar stats={stats} loading={loading} />
+          <MonitoringSection
+            stats={stats}
+            settings={settings}
+            onSettingsChange={onSettingsChange}
+            onScan={onScan}
+            scanTick={scanTick}
+          />
+        </div>
+      )}
+      {view === "approvals" && <ApprovalsSection onApprove={onApprove} />}
+      {view === "offers" && <OffersSection />}
+      {view === "platforms" && <PlatformsSection />}
+      {view === "history" && <HistorySection />}
+      {view === "analytics" && <AnalyticsSection />}
+      {view === "resume" && <ResumeSection />}
+      {view === "training" && <TrainingSection />}
+      {view === "settings" && (
+        <SettingsSection
+          settings={settings}
+          loading={loading}
+          onSettingsChange={onSettingsChange}
+        />
+      )}
+      {view === "extension" && <ExtensionSection />}
+    </>
+  );
+}
+
+function DashboardApp() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [settings, setSettings] = useState<Settings | null>(null);
   const [loading, setLoading] = useState(true);
-  // Bump this to force MonitoringSection to re-scan
   const [scanTick, setScanTick] = useState(0);
   const scanInProgress = useRef(false);
 
@@ -60,7 +107,23 @@ export default function Home() {
   }, [loadStats, loadSettings]);
 
   useEffect(() => {
-    loadAll();
+    let cancelled = false;
+    (async () => {
+      try {
+        const ob = await fetch("/api/onboarding").then((r) => r.json());
+        if (cancelled) return;
+        if (!ob.completed) {
+          window.location.replace("/onboarding");
+          return;
+        }
+      } catch {
+        /* proceed */
+      }
+      if (!cancelled) loadAll();
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [loadAll]);
 
   const handleSettingsChange = useCallback(
@@ -89,23 +152,20 @@ export default function Home() {
     loadStats();
   }, [loadStats]);
 
-  // Called by MonitoringSection when a manual scan completes
   const handleScan = useCallback(() => {
     loadStats();
   }, [loadStats]);
 
-  // Command palette: trigger a scan
   const handleCommandScan = useCallback(async () => {
     if (scanInProgress.current) return;
     scanInProgress.current = true;
-    setScanTick((t) => t + 1); // tell MonitoringSection to scan
-    // Also do a direct scan from here so it works even if monitoring section isn't mounted
+    setScanTick((t) => t + 1);
     try {
       await apiFetch("/api/scan", { method: "POST" });
       loadStats();
-      toast.success("Scan triggered from command palette");
+      toast.success("Scan triggered");
     } catch {
-      /* MonitoringSection handles its own toast */
+      /* MonitoringSection toasts */
     } finally {
       scanInProgress.current = false;
     }
@@ -117,8 +177,6 @@ export default function Home() {
     toast.success(next ? "Monitoring resumed" : "Monitoring paused");
   }, [settings?.monitoringEnabled, handleSettingsChange]);
 
-  // Auto-scan: runs on an interval based on settings.scanIntervalMinutes
-  // Only when monitoring is enabled. Keeps the "24/7" promise.
   useEffect(() => {
     if (!settings?.monitoringEnabled) return;
     const intervalMs = (settings.scanIntervalMinutes ?? 15) * 60 * 1000;
@@ -129,11 +187,9 @@ export default function Home() {
         const res = await apiFetch<{ newOffers: unknown[] }>("/api/scan", {
           method: "POST",
         });
-        if (res.newOffers.length > 0) {
-          loadStats();
-        }
+        if (res.newOffers.length > 0) loadStats();
       } catch {
-        /* silent · don't spam toasts on background scans */
+        /* silent */
       } finally {
         scanInProgress.current = false;
       }
@@ -142,42 +198,36 @@ export default function Home() {
   }, [settings?.monitoringEnabled, settings?.scanIntervalMinutes, loadStats]);
 
   return (
-    <I18nProvider>
-      <div className="flex min-h-screen flex-col">
-        <AplyHeader monitoringEnabled={stats?.monitoringEnabled ?? true}>
-          <CommandPalette
-            onScan={handleCommandScan}
-            onToggleMonitoring={handleCommandToggleMonitoring}
-            monitoringEnabled={stats?.monitoringEnabled ?? true}
-          />
-        </AplyHeader>
-        <OnboardingBanner />
-        <main className="flex-1">
-          <Hero stats={stats} loading={loading} />
-          <MonitoringSection
-            stats={stats}
-            settings={settings}
-            onSettingsChange={handleSettingsChange}
-            onScan={handleScan}
-            scanTick={scanTick}
-          />
-          <ApprovalsSection onApprove={handleApprove} />
-          <PlatformsSection />
-          <HistorySection />
-          <AnalyticsSection />
-          <TrainingSection />
-          <ResumeSection />
-          <SettingsSection
-            settings={settings}
-            loading={loading}
-            onSettingsChange={handleSettingsChange}
-          />
-          <ExtensionSection />
-        </main>
-        <AplyFooter />
-      </div>
-      <MobileNav />
+    <DashboardShell
+      monitoringEnabled={stats?.monitoringEnabled ?? true}
+      pendingCount={stats?.pendingApprovals ?? 0}
+      topbarExtra={
+        <CommandPalette
+          onScan={handleCommandScan}
+          onToggleMonitoring={handleCommandToggleMonitoring}
+          monitoringEnabled={stats?.monitoringEnabled ?? true}
+        />
+      }
+    >
+      <OnboardingBanner />
+      <DashboardViews
+        stats={stats}
+        settings={settings}
+        loading={loading}
+        scanTick={scanTick}
+        onSettingsChange={handleSettingsChange}
+        onApprove={handleApprove}
+        onScan={handleScan}
+      />
       <KeyboardShortcutsHelp onScan={handleCommandScan} />
+    </DashboardShell>
+  );
+}
+
+export default function Home() {
+  return (
+    <I18nProvider>
+      <DashboardApp />
     </I18nProvider>
   );
 }

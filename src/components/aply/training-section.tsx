@@ -119,7 +119,7 @@ export function TrainingSection({ onCountChange }: TrainingSectionProps) {
     <section
       id="training"
       aria-labelledby="training-heading"
-      className="px-4 py-12 md:px-6 md:py-16"
+      className="aply-panel px-0 py-0"
     >
       <div className="mx-auto w-full max-w-7xl">
         <div className="flex flex-col gap-2">

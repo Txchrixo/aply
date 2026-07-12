@@ -18,6 +18,7 @@ import { Icon } from "@/components/aply/icon";
 import { useI18n, type Locale } from "@/components/aply/i18n";
 import { apiFetch } from "@/components/aply/utils";
 import type { Platform, PlatformListResponse } from "@/components/aply/types";
+import { useDashNav, type DashView } from "@/components/aply/dashboard-nav";
 import { cn } from "@/lib/utils";
 
 interface CommandPaletteProps {
@@ -42,6 +43,7 @@ export function CommandPalette({
   monitoringEnabled,
 }: CommandPaletteProps) {
   const { t, locale, setLocale } = useI18n();
+  const { setView } = useDashNav();
   const [open, setOpen] = useState(false);
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [search, setSearch] = useState("");
@@ -110,22 +112,27 @@ export function CommandPalette({
     });
   }, []);
 
-  const scrollTo = useCallback((id: string) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    trackRecent(id);
-  }, [trackRecent]);
+  const goTo = useCallback(
+    (view: DashView) => {
+      setView(view);
+      trackRecent(view);
+    },
+    [setView, trackRecent]
+  );
 
   const navItems: CommandEntry[] = useMemo(
     () => [
-      { id: "nav-mon", label: t("nav.monitoring"), icon: "pulse", group: "navigate", action: closeAnd(() => scrollTo("monitoring")) },
-      { id: "nav-app", label: t("nav.approvals"), icon: "inbox", group: "navigate", action: closeAnd(() => scrollTo("approvals")) },
-      { id: "nav-plat", label: t("nav.platforms"), icon: "globe", group: "navigate", action: closeAnd(() => scrollTo("platforms")) },
-      { id: "nav-hist", label: t("nav.history"), icon: "history", group: "navigate", action: closeAnd(() => scrollTo("history")) },
-      { id: "nav-res", label: t("nav.extension"), icon: "browser", group: "navigate", action: closeAnd(() => scrollTo("extension")) },
-      { id: "nav-set", label: t("nav.settings"), icon: "gear", group: "navigate", action: closeAnd(() => scrollTo("settings")) },
+      { id: "nav-mon", label: t("nav.monitoring"), icon: "pulse", group: "navigate", action: closeAnd(() => goTo("overview")) },
+      { id: "nav-app", label: t("nav.approvals"), icon: "inbox", group: "navigate", action: closeAnd(() => goTo("approvals")) },
+      { id: "nav-off", label: t("nav.offers"), icon: "briefcase", group: "navigate", action: closeAnd(() => goTo("offers")) },
+      { id: "nav-plat", label: t("nav.platforms"), icon: "globe", group: "navigate", action: closeAnd(() => goTo("platforms")) },
+      { id: "nav-hist", label: t("nav.history"), icon: "history", group: "navigate", action: closeAnd(() => goTo("history")) },
+      { id: "nav-an", label: t("nav.analytics"), icon: "graph", group: "navigate", action: closeAnd(() => goTo("analytics")) },
+      { id: "nav-res", label: t("nav.resume"), icon: "file", group: "navigate", action: closeAnd(() => goTo("resume")) },
+      { id: "nav-ext", label: t("nav.extension"), icon: "browser", group: "navigate", action: closeAnd(() => goTo("extension")) },
+      { id: "nav-set", label: t("nav.settings"), icon: "gear", group: "navigate", action: closeAnd(() => goTo("settings")) },
     ],
-    [t, closeAnd, scrollTo]
+    [t, closeAnd, goTo]
   );
 
   const actionItems: CommandEntry[] = useMemo(
@@ -184,12 +191,17 @@ export function CommandPalette({
   const recentItems: CommandEntry[] = useMemo(() => {
     if (recent.length === 0) return [];
     const sectionToNav: Record<string, CommandEntry> = {
-      monitoring: navItems[0],
+      overview: navItems[0],
       approvals: navItems[1],
-      platforms: navItems[2],
-      history: navItems[3],
-      extension: navItems[4],
-      settings: navItems[5],
+      offers: navItems[2],
+      platforms: navItems[3],
+      history: navItems[4],
+      analytics: navItems[5],
+      resume: navItems[6],
+      extension: navItems[7],
+      settings: navItems[8],
+      // legacy hash ids from older sessions
+      monitoring: navItems[0],
     };
     return recent
       .map((section) => sectionToNav[section])

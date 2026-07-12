@@ -105,7 +105,7 @@ export function HistorySection() {
       <section
         id="history"
         aria-labelledby="history-heading"
-        className="bg-card/60 px-4 py-12 md:px-6 md:py-16 dark:bg-[#3A2417]/40"
+        className="aply-panel px-0 py-0"
       >
         <div className="mx-auto w-full max-w-7xl">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

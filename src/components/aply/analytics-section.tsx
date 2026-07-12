@@ -172,7 +172,7 @@ export function AnalyticsSection() {
 
   if (loading) {
     return (
-      <section id="analytics" aria-labelledby="analytics-heading" className="px-4 py-12 md:px-6 md:py-16">
+      <section id="analytics" aria-labelledby="analytics-heading" className="aply-panel px-0 py-0">
         <div className="mx-auto w-full max-w-7xl">
           <SectionHeading
             id="analytics-heading"
@@ -196,7 +196,7 @@ export function AnalyticsSection() {
 
   if (!data || data.summary.total === 0) {
     return (
-      <section id="analytics" aria-labelledby="analytics-heading" className="px-4 py-12 md:px-6 md:py-16">
+      <section id="analytics" aria-labelledby="analytics-heading" className="aply-panel px-0 py-0">
         <div className="mx-auto w-full max-w-7xl">
           <SectionHeading
             id="analytics-heading"
@@ -240,7 +240,7 @@ export function AnalyticsSection() {
   const s = data.summary;
 
   return (
-    <section id="analytics" aria-labelledby="analytics-heading" className="bg-card/60 px-4 py-12 md:px-6 md:py-16 dark:bg-[#3A2417]/40">
+    <section id="analytics" aria-labelledby="analytics-heading" className="aply-panel px-0 py-0">
       <div className="mx-auto w-full max-w-7xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <SectionHeading

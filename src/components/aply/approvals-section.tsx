@@ -340,7 +340,7 @@ export function ApprovalsSection({ onApprove }: ApprovalsSectionProps) {
     <section
       id="approvals"
       aria-labelledby="approvals-heading"
-      className="bg-card/60 px-4 py-12 md:px-6 md:py-16"
+      className="aply-panel px-0 py-0"
     >
       <div className="mx-auto w-full max-w-7xl">
         <SectionHeading

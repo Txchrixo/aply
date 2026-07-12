@@ -1,7 +1,6 @@
 "use client";
 /**
- * SectionHeading - clean section header without decorative lines.
- * Uses spacing and typography hierarchy instead of borders.
+ * SectionHeading — panel titles for the app shell (compact by default).
  */
 import { cn } from "@/lib/utils";
 
@@ -12,6 +11,8 @@ interface SectionHeadingProps {
   eyebrow?: string;
   className?: string;
   align?: "left" | "center";
+  /** Marketing-style large heading. Dashboard uses compact. */
+  compact?: boolean;
 }
 
 export function SectionHeading({
@@ -21,28 +22,38 @@ export function SectionHeading({
   eyebrow,
   className,
   align = "left",
+  compact = true,
 }: SectionHeadingProps) {
   return (
     <div
       className={cn(
-        "flex flex-col gap-1.5",
+        "flex flex-col",
+        compact ? "gap-0.5" : "gap-1.5",
         align === "center" && "items-center text-center",
         className
       )}
     >
-      {eyebrow && (
+      {eyebrow && !compact && (
         <span className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">
           {eyebrow}
         </span>
       )}
       <h2
         id={id}
-        className="font-heading text-2xl font-semibold leading-tight text-foreground sm:text-3xl md:text-4xl"
+        className={cn(
+          "font-heading font-semibold leading-tight text-foreground",
+          compact ? "text-lg sm:text-xl" : "text-2xl sm:text-3xl md:text-4xl"
+        )}
       >
         {title}
       </h2>
       {subtitle && (
-        <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
+        <p
+          className={cn(
+            "max-w-2xl text-muted-foreground",
+            compact ? "text-xs sm:text-sm" : "text-sm sm:text-base"
+          )}
+        >
           {subtitle}
         </p>
       )}
