@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
+  transpilePackages: ["react-pdf", "pdfjs-dist"],
 };
 
 export default nextConfig;

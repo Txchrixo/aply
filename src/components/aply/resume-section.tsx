@@ -8,7 +8,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -22,8 +21,18 @@ import { Icon } from "@/components/aply/icon";
 import type { Resume, ResumeListResponse } from "@/components/aply/types";
 import { apiFetch } from "@/components/aply/utils";
 import { useI18n } from "@/components/aply/i18n";
-import { extractTextFromFile, ACCEPTED_FILE_TYPES } from "@/lib/file-extract";
+import { uploadResumeFile, ACCEPTED_FILE_TYPES } from "@/lib/file-extract";
 import { cn } from "@/lib/utils";
+import dynamic from "next/dynamic";
+
+const ResumePdfPreviewLazy = dynamic(
+  () =>
+    import("@/components/aply/resume-pdf-preview").then((m) => m.ResumePdfPreview),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-[min(70vh,720px)] w-full rounded-md" />,
+  }
+);
 
 export function ResumeSection() {
   const { t } = useI18n();
@@ -76,26 +85,11 @@ export function ResumeSection() {
     setUploading(true);
     toast.loading(t("resume.upload.extracting"), { id: "upload" });
     try {
-      const text = await extractTextFromFile(file);
-      if (resume) {
-        // Update existing resume
-        await apiFetch("/api/resume", {
-          method: "PATCH",
-          body: JSON.stringify({ id: resume.id, rawText: text }),
-        });
-      } else {
-        // Create new resume
-        await apiFetch("/api/resume", {
-          method: "POST",
-          body: JSON.stringify({
-            rawText: text,
-            label: file.name.replace(/\.[^.]+$/, ""),
-            isDefault: true,
-          }),
-        });
-      }
+      const uploaded = await uploadResumeFile(file);
       toast.success(
-        t("resume.upload.success").replace("{chars}", text.length.toLocaleString()),
+        t("resume.upload.success")
+          .replace("{chars}", uploaded.rawText.length.toLocaleString())
+          .replace("{file}", uploaded.fileName || file.name),
         { id: "upload" }
       );
       load();
@@ -124,12 +118,19 @@ export function ResumeSection() {
   };
 
   const skills = resume?.structured?.skills ?? [];
+  const isPdf =
+    Boolean(resume?.hasFile) &&
+    (resume?.fileMime === "application/pdf" ||
+      (resume?.fileName ?? "").toLowerCase().endsWith(".pdf"));
+  const fileUrl = resume?.hasFile
+    ? `/api/resume/file?id=${encodeURIComponent(resume.id)}`
+    : null;
 
   return (
     <section
       id="resume"
       aria-labelledby="resume-heading"
-      className="px-4 py-12 md:px-6 md:py-16"
+      className="aply-panel px-0 py-0"
     >
       <div className="mx-auto w-full max-w-7xl">
         <div className="flex flex-col gap-2">
@@ -182,7 +183,19 @@ export function ResumeSection() {
                           {resume.language}
                         </span>{" "}
                         · {resume.rawText.length.toLocaleString()} {t("resume.chars")}
+                        {resume.hasFile && resume.fileName
+                          ? ` · ${resume.fileName}`
+                          : ""}
                       </p>
+                      {resume.hasFile ? (
+                        <p className="mt-1 text-[11px] text-primary">
+                          {t("resume.file.kept")}
+                        </p>
+                      ) : (
+                        <p className="mt-1 text-[11px] text-muted-foreground dark:text-[#C9B89F]">
+                          {t("resume.file.missing")}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <Dialog open={open} onOpenChange={setOpen}>
@@ -251,17 +264,80 @@ export function ResumeSection() {
                   </div>
                 )}
 
-                <ScrollArea className="h-48 rounded-md border border-border bg-background dark:bg-[#4A2F1A]">
-                  <pre className="whitespace-pre-wrap p-3 text-sm leading-relaxed text-foreground dark:text-primary-foreground">
-                    {resume.rawText}
-                  </pre>
-                </ScrollArea>
+                {fileUrl && (
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground dark:text-[#C9B89F]">
+                        {t("resume.preview")}
+                      </p>
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                          asChild
+                        >
+                          <a href={fileUrl} target="_blank" rel="noreferrer">
+                            <Icon name="link-external" size={12} />
+                            {t("resume.preview.open")}
+                          </a>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                          asChild
+                        >
+                          <a href={`${fileUrl}&download=1`} download={resume.fileName ?? undefined}>
+                            <Icon name="download" size={12} />
+                            {t("resume.preview.download")}
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                    {isPdf ? (
+                      <ResumePdfPreviewLazy
+                        key={fileUrl}
+                        url={fileUrl}
+                        fileName={resume.fileName}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-start gap-2 rounded-md border border-dashed border-border bg-background px-4 py-6 dark:bg-[#4A2F1A]">
+                        <p className="text-sm text-muted-foreground dark:text-[#C9B89F]">
+                          {t("resume.preview.unsupported")}
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-[#C65D00] text-primary"
+                          asChild
+                        >
+                          <a href={`${fileUrl}&download=1`} download={resume.fileName ?? undefined}>
+                            <Icon name="download" size={14} />
+                            {resume.fileName || t("resume.preview.download")}
+                          </a>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground dark:text-[#C9B89F]">
+                    {t("resume.extracted")}
+                  </p>
+                  <div className="aply-scroll h-80 overflow-y-auto overflow-x-hidden rounded-md border border-border bg-background dark:bg-[#4A2F1A]">
+                    <pre className="m-0 block whitespace-pre-wrap break-words p-3 font-mono text-sm leading-relaxed text-foreground dark:text-primary-foreground">
+                      {resume.rawText}
+                    </pre>
+                  </div>
+                </div>
               </>
             )}
           </Card>
 
-          {/* Upload card · 1 col */}
-          <Card className="gap-3 rounded-xl border-border bg-card p-5 dark:bg-[#3A2417]">
+          {/* Upload card · 1 col · stay top-aligned, don't stretch with PDF preview */}
+          <Card className="h-fit gap-3 self-start rounded-xl border-border bg-card p-5 dark:bg-[#3A2417]">
             <div className="flex items-center gap-2">
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/15 text-primary dark:bg-accent/20 dark:text-[#FF9F1C]">
                 <Icon name="upload" size={16} />
