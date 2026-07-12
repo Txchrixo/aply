@@ -62,6 +62,9 @@ skills/
 *.db
 db/
 
+# Aply local browser profiles / auth state (never commit)
+.aply/
+
 # Research
 research/
 
