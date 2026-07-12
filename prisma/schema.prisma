@@ -34,6 +34,24 @@ model Platform {
   jobOffers       JobOffer[]
   formRequirements FormFieldRequirement[]
   credentials     AccountCredential[]
+  browserSession  BrowserSession?
+}
+
+// ---------------------------------------------------------------------------
+// Browser sessions · Playwright persistent profiles per platform (Connect)
+// status: disconnected | connecting | connected | waiting_captcha | error
+// ---------------------------------------------------------------------------
+model BrowserSession {
+  id            String   @id @default(cuid())
+  platformId    String   @unique
+  platform      Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
+  status        String   @default("disconnected")
+  profilePath   String
+  lastError     String?
+  connectedAt   DateTime?
+  lastUsedAt    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 // ---------------------------------------------------------------------------
@@ -221,6 +239,11 @@ model Resume {
   structured    String?  // JSON: skills, experience, education, etc.
   language      String   @default("en")
   isDefault     Boolean  @default(false)
+  /// Original upload kept for form file inputs (PDF/DOCX preferred)
+  fileName      String?
+  fileMime      String?
+  /// Absolute or data-dir-relative path under .aply/resumes/
+  filePath      String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -244,17 +267,22 @@ model PastApplication {
 // ---------------------------------------------------------------------------
 model Setting {
   id            String   @id @default("aply")
+  /// Profile name from signup — separate for greetings / forms
+  firstName     String?
+  lastName      String?
   notifyEmail   String?
   notifyWhatsapp String?
-  notifyChannel String   @default("dashboard") // dashboard | email | whatsapp | both
+  notifyChannel String   @default("dashboard") // derived: dashboard | email | whatsapp | both (multi-select UI; add channels in notify-channels.ts)
   languages     String   @default("[\"en\",\"fr\",\"de\"]")
   autoApproveThreshold Float @default(0)
   monitoringEnabled Boolean @default(true)
   scanIntervalMinutes Int  @default(15)
   antiAiStrictMode Boolean @default(true)
   // Emails Aply can use to create accounts on job sites
-  accountEmails String  @default("[\"alex.martin@example.com\"]") // JSON array
+  accountEmails String  @default("[]") // JSON array
   preferCareerPage Boolean @default(true) // prefer applying via company career page over job board
+  onboardingCompleted Boolean @default(false)
+  onboardingStep Int @default(0) // 0..4 while in progress
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

@@ -8,6 +8,8 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { greetingLine } from "@/lib/user-identity";
+import { resolveUserGreetingName } from "@/lib/user-identity-server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -45,16 +47,32 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const settings = await db.setting.findUnique({ where: { id: "aply" } });
+  const userName = await resolveUserGreetingName();
+
+  let to = channel === "whatsapp" ? "+00 000 000 000" : "you@example.com";
+  if (channel === "email") {
+    if (settings?.notifyEmail?.trim()) {
+      to = settings.notifyEmail.trim();
+    } else {
+      try {
+        const emails = JSON.parse(settings?.accountEmails ?? "[]") as string[];
+        if (emails[0]?.trim()) to = emails[0].trim();
+      } catch {
+        /* keep fallback */
+      }
+    }
+  } else if (settings?.notifyWhatsapp?.trim()) {
+    to = settings.notifyWhatsapp.trim();
+  }
+
   // Build a preview summary (what would be sent via email/WhatsApp)
   const summary = {
     channel,
-    to:
-      channel === "email"
-        ? "alex.martin@example.com"
-        : "+33 6 12 34 56 78",
+    to,
     subject: `Aply · approval needed: ${application.jobOffer.title}`,
     body: [
-      `Hi Alex,`,
+      greetingLine(userName),
       ``,
       `Aply prepared an application and is waiting for your green light.`,
       ``,

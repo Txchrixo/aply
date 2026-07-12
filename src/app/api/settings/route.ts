@@ -37,6 +37,14 @@ export async function POST(req: NextRequest) {
     data.accountEmails = JSON.stringify(body.accountEmails);
   if (typeof body.preferCareerPage === "boolean")
     data.preferCareerPage = body.preferCareerPage;
+  if (typeof body.onboardingCompleted === "boolean")
+    data.onboardingCompleted = body.onboardingCompleted;
+  if (typeof body.onboardingStep === "number")
+    data.onboardingStep = body.onboardingStep;
+  if (typeof body.firstName === "string")
+    data.firstName = body.firstName.trim() || null;
+  if (typeof body.lastName === "string")
+    data.lastName = body.lastName.trim() || null;
 
   const updated = await db.setting.upsert({
     where: { id: "aply" },

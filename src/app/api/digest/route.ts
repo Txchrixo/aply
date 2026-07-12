@@ -12,11 +12,14 @@
  */
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { greetingLine } from "@/lib/user-identity";
+import { resolveUserGreetingName } from "@/lib/user-identity-server";
 
 export async function GET() {
   const now = new Date();
   const weekAgo = new Date(now);
   weekAgo.setDate(now.getDate() - 7);
+  const userName = await resolveUserGreetingName();
 
   // Applications created this week
   const weekApplications = await db.application.findMany({
@@ -96,7 +99,7 @@ export async function GET() {
   // Build email preview
   const subject = `Aply · your weekly digest (${weekScans} scans, ${submittedThisWeek.length} submitted)`;
   const body = [
-    `Hi Alex,`,
+    greetingLine(userName),
     ``,
     `Here's your Aply weekly summary:`,
     ``,
