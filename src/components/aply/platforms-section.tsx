@@ -1,19 +1,16 @@
 "use client";
 /**
- * PlatformsSection · filterable, paginated grid of monitored platforms.
+ * PlatformsSection · filterable, paginated list of monitored platforms.
  * Includes an "Add platform" dialog that POSTs to /api/platforms.
  */
 import { useCallback, useEffect, useState } from "react";
-import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -33,12 +30,11 @@ import {
 import { Icon } from "@/components/aply/icon";
 import { SectionHeading } from "@/components/aply/section-heading";
 import { PlatformDetailDrawer } from "@/components/aply/platform-detail-drawer";
+import { PlatformLogo } from "@/components/aply/platform-logo";
 import { Pagination } from "@/components/aply/pagination";
 import { hasRssFeed } from "@/lib/rss-feeds";
 import {
   CategoryBadge,
-  ContractBadge,
-  LangBadge,
   PriorityDot,
 } from "@/components/aply/badges";
 import type {
@@ -69,17 +65,26 @@ const CONTRACT_TYPES = ["full-time", "part-time", "internship", "freelance", "re
 
 interface PlatformCardProps {
   platform: Platform;
+  sessionStatus?: string | null;
   onToggle: (id: string, next: boolean) => void;
   onClick: (id: string) => void;
+  onConnect?: (id: string) => void;
+  onConfirm?: (id: string) => void;
+  connecting?: boolean;
 }
 
-function PlatformCard({ platform, onToggle, onClick }: PlatformCardProps) {
+function PlatformRow({
+  platform,
+  sessionStatus,
+  onToggle,
+  onClick,
+  onConnect,
+  onConfirm,
+  connecting,
+}: PlatformCardProps) {
   const { t } = useI18n();
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
+    <li
       onClick={() => onClick(platform.id)}
       role="button"
       tabIndex={0}
@@ -90,87 +95,119 @@ function PlatformCard({ platform, onToggle, onClick }: PlatformCardProps) {
         }
       }}
       aria-label={`View details for ${platform.name}`}
-      className="aply-card-hover flex cursor-pointer flex-col gap-2.5 rounded-xl bg-card p-4 ring-1 ring-border/40"
+      className="flex cursor-pointer items-center gap-3 px-3 py-2.5 transition-colors hover:bg-muted/40"
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex min-w-0 items-center gap-2">
+      <PlatformLogo url={platform.url} name={platform.name} size={28} />
+
+      <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
           <PriorityDot priority={platform.priority} />
           <span className="truncate text-sm font-medium text-foreground">
             {platform.name}
           </span>
+          <CategoryBadge category={platform.category} />
+          {platform.hasLoginRequired && (
+            <span className="inline-flex items-center gap-1 rounded-md border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+              <Icon name="shield-lock" size={10} />
+              {t("platforms.login")}
+            </span>
+          )}
+          {platform.hasAntiBot && (
+            <span className="inline-flex items-center gap-1 rounded-md border border-destructive/30 bg-destructive/10 px-1.5 py-0.5 text-[10px] font-medium text-destructive">
+              <Icon name="alert" size={10} />
+              {t("platforms.antibot")}
+            </span>
+          )}
+          {hasRssFeed(platform.name) && (
+            <span
+              className="inline-flex items-center gap-1 rounded-md border border-accent/40 bg-accent/15 px-1.5 py-0.5 text-[10px] font-medium text-foreground"
+              title={t("platforms.rssTooltip")}
+            >
+              <Icon name="rss" size={10} />
+              RSS
+            </span>
+          )}
         </div>
-        <div className="flex shrink-0 items-center gap-1">
+        <p className="mt-0.5 truncate text-[11px] text-muted-foreground" title={platform.url}>
+          {platform.url.replace(/^https?:\/\//, "")}
+        </p>
+      </div>
+
+      <div
+        className="flex shrink-0 flex-wrap items-center justify-end gap-1.5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Button variant="outline" size="sm" className="h-7 gap-1.5 text-[11px]" asChild>
           <a
             href={platform.url}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
             aria-label={t("platforms.aria.openInNewTab").replace("{name}", platform.name)}
-            className="touch-target flex items-center justify-center rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-primary"
           >
-            <Icon name="link-external" size={14} />
+            <Icon name="link-external" size={12} />
+            {t("platforms.action.open")}
           </a>
+        </Button>
+
+        {platform.hasLoginRequired && onConnect && (
+          <>
+            {sessionStatus === "connected" ? (
+              <span className="inline-flex h-7 items-center gap-1.5 rounded-md border border-[#2ea043]/35 bg-[#2ea043]/10 px-2.5 text-[11px] font-medium text-[#1f7a32] dark:text-[#7DCEA0]">
+                <Icon name="check" size={12} />
+                {t("platforms.action.connected")}
+              </span>
+            ) : (
+              <>
+                {(sessionStatus === "connecting" ||
+                  sessionStatus === "waiting_captcha") &&
+                  onConfirm && (
+                    <Button
+                      size="sm"
+                      className="h-7 text-[11px]"
+                      disabled={connecting}
+                      onClick={() => onConfirm(platform.id)}
+                    >
+                      {t("platforms.action.loggedIn")}
+                    </Button>
+                  )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 gap-1.5 text-[11px]"
+                  disabled={connecting}
+                  onClick={() => onConnect(platform.id)}
+                >
+                  {connecting || sessionStatus === "connecting" ? (
+                    <Icon name="sync" size={12} className="animate-spin" />
+                  ) : (
+                    <Icon name="key" size={12} />
+                  )}
+                  {sessionStatus === "waiting_captcha"
+                    ? "Captcha"
+                    : t("platforms.action.connect")}
+                </Button>
+              </>
+            )}
+          </>
+        )}
+
+        <label
+          className="inline-flex h-7 cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-2 text-[11px] font-medium text-foreground"
+          title={t("platforms.aria.toggle").replace("{name}", platform.name)}
+        >
+          <span className={platform.enabled ? undefined : "text-muted-foreground"}>
+            {platform.enabled
+              ? t("platforms.action.monitoringOn")
+              : t("platforms.action.monitoringOff")}
+          </span>
           <Switch
             checked={platform.enabled}
             onCheckedChange={(v) => onToggle(platform.id, v)}
-            onClick={(e) => e.stopPropagation()}
             aria-label={t("platforms.aria.toggle").replace("{name}", platform.name)}
           />
-        </div>
+        </label>
       </div>
-
-      <div className="flex flex-wrap items-center gap-1.5">
-        <CategoryBadge category={platform.category} />
-        {platform.hasLoginRequired && (
-          <span className="inline-flex items-center gap-1 rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-            <Icon name="shield-lock" size={10} />
-            {t("platforms.login")}
-          </span>
-        )}
-        {platform.hasAntiBot && (
-          <span className="inline-flex items-center gap-1 rounded bg-[#B23A1E]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#B23A1E]">
-            <Icon name="alert" size={10} />
-            {t("platforms.antibot")}
-          </span>
-        )}
-        {hasRssFeed(platform.name) && (
-          <span
-            className="inline-flex items-center gap-1 rounded bg-[#FF9F1C]/15 px-1.5 py-0.5 text-[10px] font-medium text-primary dark:text-accent"
-            title={t("platforms.rssTooltip")}
-          >
-            <Icon name="rss" size={10} />
-            RSS
-          </span>
-        )}
-      </div>
-
-      <p className="truncate text-xs text-muted-foreground" title={platform.url}>
-        {platform.url.replace(/^https?:\/\//, "")}
-      </p>
-
-      <div className="flex flex-wrap items-center gap-1">
-        {platform.languages.map((l) => (
-          <LangBadge key={l} lang={l} />
-        ))}
-        {platform.contractTypes.slice(0, 3).map((c) => (
-          <ContractBadge key={c} type={c} />
-        ))}
-        {platform.contractTypes.length > 3 && (
-          <span className="text-[10px] text-muted-foreground">
-            +{platform.contractTypes.length - 3}
-          </span>
-        )}
-      </div>
-
-      {platform.notes && (
-        <p
-          className="line-clamp-1 text-[11px] text-muted-foreground"
-          title={platform.notes}
-        >
-          {platform.notes}
-        </p>
-      )}
-    </motion.div>
+    </li>
   );
 }
 
@@ -408,13 +445,83 @@ export function PlatformsSection() {
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("all");
   const [enabledOnly, setEnabledOnly] = useState(false);
+  const [loginFilter, setLoginFilter] = useState<"all" | "login" | "no_login">(
+    "all"
+  );
+  const [connectionFilter, setConnectionFilter] = useState<
+    "all" | "connected" | "not_connected"
+  >("all");
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [drawerId, setDrawerId] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [sessions, setSessions] = useState<Record<string, string>>({});
+  const [connectingId, setConnectingId] = useState<string | null>(null);
 
   const handleCardClick = (id: string) => {
     setDrawerId(id);
     setDrawerOpen(true);
+  };
+
+  const refreshSessions = useCallback(async () => {
+    try {
+      const res = await fetch("/api/browser/sessions");
+      const data = await res.json();
+      const map: Record<string, string> = {};
+      for (const s of data.items ?? []) {
+        map[s.platformId] = s.status;
+      }
+      setSessions(map);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshSessions();
+    const t = setInterval(refreshSessions, 5000);
+    return () => clearInterval(t);
+  }, [refreshSessions]);
+
+  const handleConnect = async (id: string) => {
+    setConnectingId(id);
+    try {
+      const res = await fetch("/api/browser/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ platformId: id }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) toast.error(data.error || "Connect failed");
+      else
+        toast.message("Browser opened", {
+          description:
+            "Shared profile — Google once if needed, then log in and click “I’ve logged in”.",
+        });
+      await refreshSessions();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Connect failed");
+    } finally {
+      setConnectingId(null);
+    }
+  };
+
+  const handleConfirm = async (id: string) => {
+    setConnectingId(id);
+    try {
+      const res = await fetch("/api/browser/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ platformId: id }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) toast.error(data.error || "Confirm failed");
+      else toast.success("Platform connected");
+      await refreshSessions();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Confirm failed");
+    } finally {
+      setConnectingId(null);
+    }
   };
 
   const load = useCallback(async () => {
@@ -427,6 +534,11 @@ export function PlatformsSection() {
       if (category !== "all") params.set("category", category);
       if (q) params.set("q", q);
       if (enabledOnly) params.set("enabled", "true");
+      if (loginFilter === "login") params.set("loginRequired", "true");
+      if (loginFilter === "no_login") params.set("loginRequired", "false");
+      if (connectionFilter === "connected") params.set("sessionStatus", "connected");
+      if (connectionFilter === "not_connected")
+        params.set("sessionStatus", "not_connected");
       const res = await apiFetch<PlatformListResponse>(
         `/api/platforms?${params.toString()}`
       );
@@ -438,7 +550,7 @@ export function PlatformsSection() {
     } finally {
       setLoading(false);
     }
-  }, [page, category, q, enabledOnly]);
+  }, [page, category, q, enabledOnly, loginFilter, connectionFilter]);
 
   useEffect(() => {
     const t = setTimeout(load, 200);
@@ -474,7 +586,7 @@ export function PlatformsSection() {
     <section
       id="platforms"
       aria-labelledby="platforms-heading"
-      className="px-4 py-12 md:px-6 md:py-16"
+      className="aply-panel px-0 py-0"
     >
       <div className="mx-auto w-full max-w-7xl">
         <SectionHeading
@@ -484,9 +596,9 @@ export function PlatformsSection() {
           subtitle={`${total} ${t("platforms.subtitleSuffix")}`}
         />
 
-        {/* Filter bar - stacked on mobile, row on desktop */}
-        <div className="mt-6 flex flex-col gap-2 rounded-xl bg-card p-3 ring-1 ring-border/40 sm:flex-row sm:items-center sm:gap-3">
-          <div className="relative flex-1">
+        {/* Filter bar — search full width, filters on the row below */}
+        <div className="mt-6 space-y-2 rounded-xl bg-card p-3 ring-1 ring-border/40">
+          <div className="relative w-full">
             <Icon
               name="search"
               size={14}
@@ -499,10 +611,10 @@ export function PlatformsSection() {
                 setPage(1);
               }}
               placeholder={t("platforms.search")}
-              className="touch-target pl-9"
+              className="touch-target w-full pl-9"
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Select
               value={category}
               onValueChange={(v) => {
@@ -510,7 +622,7 @@ export function PlatformsSection() {
                 setPage(1);
               }}
             >
-              <SelectTrigger className="touch-target w-full sm:w-44">
+              <SelectTrigger className="touch-target w-[min(100%,11rem)]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -519,6 +631,38 @@ export function PlatformsSection() {
                     {t(`platforms.category.${c}`)}
                   </SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+            <Select
+              value={loginFilter}
+              onValueChange={(v) => {
+                setLoginFilter(v as "all" | "login" | "no_login");
+                setPage(1);
+              }}
+            >
+              <SelectTrigger className="touch-target w-[min(100%,11rem)]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("platforms.filter.loginAll")}</SelectItem>
+                <SelectItem value="login">{t("platforms.filter.loginYes")}</SelectItem>
+                <SelectItem value="no_login">{t("platforms.filter.loginNo")}</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
+              value={connectionFilter}
+              onValueChange={(v) => {
+                setConnectionFilter(v as "all" | "connected" | "not_connected");
+                setPage(1);
+              }}
+            >
+              <SelectTrigger className="touch-target w-[min(100%,11rem)]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("platforms.filter.connAll")}</SelectItem>
+                <SelectItem value="connected">{t("platforms.filter.connYes")}</SelectItem>
+                <SelectItem value="not_connected">{t("platforms.filter.connNo")}</SelectItem>
               </SelectContent>
             </Select>
             <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2">
@@ -534,48 +678,68 @@ export function PlatformsSection() {
                 {t("platforms.enabledOnly")}
               </Label>
             </div>
-            <AddPlatformDialog onCreated={load} />
+            <div className="ml-auto">
+              <AddPlatformDialog onCreated={load} />
+            </div>
           </div>
         </div>
 
-        {/* Grid - 1 col mobile, 2 sm, 3 lg, 4 xl */}
-        <div className="mt-6 max-h-[60rem] overflow-y-auto aply-scroll pr-1">
+        <div className="mt-4">
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={setPage}
+            align="start"
+          />
+        </div>
+
+        {/* List */}
+        <div className="mt-3 max-h-[60rem] overflow-y-auto rounded-xl border border-border/60 bg-card aply-scroll">
           {loading ? (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="divide-y divide-border/60">
               {Array.from({ length: 8 }).map((_, i) => (
-                <Skeleton key={i} className="h-36 rounded-xl" />
+                <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+                  <Skeleton className="h-7 w-7 shrink-0 rounded-md" />
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-3 w-56" />
+                  </div>
+                  <Skeleton className="h-7 w-16" />
+                </div>
               ))}
             </div>
           ) : items.length === 0 ? (
-            <div className="flex flex-col items-center gap-3 rounded-xl bg-card px-6 py-16 text-center ring-1 ring-border/40">
+            <div className="flex flex-col items-center gap-3 px-6 py-16 text-center">
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-primary">
                 <Icon name="search" size={20} />
               </span>
               <p className="text-sm text-muted-foreground">{t("platforms.empty")}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <ul className="divide-y divide-border/60">
               {items.map((p) => (
-                <PlatformCard
+                <PlatformRow
                   key={p.id}
                   platform={p}
+                  sessionStatus={sessions[p.id] ?? null}
                   onToggle={handleToggle}
                   onClick={handleCardClick}
+                  onConnect={handleConnect}
+                  onConfirm={handleConfirm}
+                  connecting={connectingId === p.id}
                 />
               ))}
-            </div>
+            </ul>
           )}
         </div>
 
         {/* Pagination */}
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-muted-foreground">
-            {t("platforms.page")} {page} {t("platforms.of")} {Math.max(1, totalPages)} · {total} {t("platforms.total")}
-          </p>
+        <div className="mt-4">
           <Pagination
             page={page}
             totalPages={totalPages}
             onPageChange={setPage}
+            align="end"
           />
         </div>
         {togglingId && (

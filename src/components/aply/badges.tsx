@@ -1,20 +1,41 @@
 /**
- * Small shared UI helpers for Aply dashboard.
- * Pure presentational components following the design.md palette.
+ * Aply badges — soft theme tokens only (primary / accent / muted / destructive).
+ * Categories stay distinguishable without leaving the brand palette.
  */
 import { cn } from "@/lib/utils";
 
-const CATEGORY_STYLES: Record<string, string> = {
-  generalist: "bg-[#FFE4B5] text-[#C65D00] border-[#C65D00]/30",
-  freelance: "bg-[#FF9F1C]/15 text-[#C65D00] border-[#FF9F1C]/40",
-  remote: "bg-[#8B4513]/10 text-[#8B4513] border-[#8B4513]/30",
-  tech: "bg-[#C65D00]/12 text-[#C65D00] border-[#C65D00]/30",
-  startup: "bg-[#FF9F1C]/20 text-[#4A2F1A] border-[#FF9F1C]/50",
-  design: "bg-[#A0522D]/12 text-[#A0522D] border-[#A0522D]/30",
-  regional_fr: "bg-[#C65D00]/10 text-[#4A2F1A] border-[#C65D00]/30",
-  regional_de: "bg-[#D2691E]/12 text-[#4A2F1A] border-[#D2691E]/30",
-  regional_other: "bg-[#79695E]/12 text-[#4A2F1A] border-[#79695E]/30",
-  niche: "bg-[#FFE4B5] text-[#79695E] border-[#CFC5BE]",
+/** Shared soft pill shell */
+const pill =
+  "inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium leading-none";
+
+const tone = {
+  primary:
+    "border-primary/30 bg-primary/10 text-primary",
+  accent:
+    "border-accent/40 bg-accent/15 text-foreground",
+  secondary:
+    "border-border bg-secondary text-secondary-foreground",
+  muted:
+    "border-border bg-muted text-muted-foreground",
+  ink:
+    "border-foreground/20 bg-foreground/5 text-foreground",
+  danger:
+    "border-destructive/30 bg-destructive/10 text-destructive",
+  success:
+    "border-[#2ea043]/35 bg-[#2ea043]/10 text-[#1f7a32] dark:text-[#7DCEA0]",
+} as const;
+
+const CATEGORY_TONE: Record<string, keyof typeof tone> = {
+  generalist: "muted",
+  freelance: "accent",
+  remote: "primary",
+  tech: "primary",
+  startup: "accent",
+  design: "secondary",
+  regional_fr: "ink",
+  regional_de: "ink",
+  regional_other: "muted",
+  niche: "muted",
 };
 
 const CATEGORY_LABEL: Record<string, string> = {
@@ -31,24 +52,20 @@ const CATEGORY_LABEL: Record<string, string> = {
 };
 
 export function CategoryBadge({ category }: { category: string }) {
+  const t = CATEGORY_TONE[category] ?? "muted";
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium leading-none",
-        CATEGORY_STYLES[category] ?? CATEGORY_STYLES.niche
-      )}
-    >
+    <span className={cn(pill, tone[t])}>
       {CATEGORY_LABEL[category] ?? category}
     </span>
   );
 }
 
-const CONTRACT_STYLES: Record<string, string> = {
-  "full-time": "bg-[#C65D00] text-[#FFE4B5]",
-  "part-time": "bg-[#FF9F1C] text-[#4A2F1A]",
-  internship: "bg-[#8B4513] text-[#FFE4B5]",
-  freelance: "bg-[#D2691E] text-[#FFE4B5]",
-  remote: "bg-[#4A2F1A] text-[#FFE4B5]",
+const CONTRACT_TONE: Record<string, keyof typeof tone> = {
+  "full-time": "primary",
+  "part-time": "accent",
+  internship: "secondary",
+  freelance: "accent",
+  remote: "ink",
 };
 
 const CONTRACT_LABEL: Record<string, string> = {
@@ -60,11 +77,13 @@ const CONTRACT_LABEL: Record<string, string> = {
 };
 
 export function ContractBadge({ type }: { type: string }) {
+  const t = CONTRACT_TONE[type] ?? "muted";
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide leading-none",
-        CONTRACT_STYLES[type] ?? "bg-[#FFE4B5] text-[#79695E]"
+        pill,
+        "uppercase tracking-wide text-[10px]",
+        tone[t]
       )}
     >
       {CONTRACT_LABEL[type] ?? type}
@@ -73,27 +92,29 @@ export function ContractBadge({ type }: { type: string }) {
 }
 
 export function LangBadge({ lang }: { lang: string }) {
-  const map: Record<string, string> = {
-    en: "EN",
-    fr: "FR",
-    de: "DE",
-  };
+  const map: Record<string, string> = { en: "EN", fr: "FR", de: "DE" };
   return (
-    <span className="inline-flex h-5 w-7 items-center justify-center rounded border border-[#CFC5BE] bg-[#FFF4DC] text-[10px] font-semibold text-[#4A2F1A]">
+    <span
+      className={cn(
+        "inline-flex h-5 w-7 items-center justify-center rounded border text-[10px] font-semibold",
+        tone.muted
+      )}
+    >
       {map[lang] ?? lang.toUpperCase()}
     </span>
   );
 }
 
-const STATUS_STYLES: Record<string, string> = {
-  new: "bg-[#FF9F1C]/15 text-[#C65D00] border-[#FF9F1C]/40",
-  prepared: "bg-[#8B4513]/10 text-[#8B4513] border-[#8B4513]/30",
-  pending_approval: "bg-[#C65D00]/15 text-[#C65D00] border-[#C65D00]/40",
-  applied: "bg-[#2ea043]/12 text-[#2ea043] border-[#2ea043]/30",
-  rejected: "bg-[#B23A1E]/10 text-[#B23A1E] border-[#B23A1E]/30",
-  skipped: "bg-[#79695E]/12 text-[#79695E] border-[#79695E]/30",
-  draft: "bg-[#FFE4B5] text-[#79695E] border-[#CFC5BE]",
-  submitted: "bg-[#2ea043]/12 text-[#2ea043] border-[#2ea043]/30",
+const STATUS_TONE: Record<string, keyof typeof tone> = {
+  new: "accent",
+  prepared: "secondary",
+  pending_approval: "primary",
+  applied: "success",
+  rejected: "danger",
+  skipped: "muted",
+  draft: "muted",
+  submitted: "success",
+  importing: "accent",
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -105,16 +126,13 @@ const STATUS_LABEL: Record<string, string> = {
   skipped: "Skipped",
   draft: "Draft",
   submitted: "Submitted",
+  importing: "Importing",
 };
 
 export function StatusBadge({ status }: { status: string }) {
+  const t = STATUS_TONE[status] ?? "muted";
   return (
-    <span
-      className={cn(
-        "inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium leading-none",
-        STATUS_STYLES[status] ?? STATUS_STYLES.draft
-      )}
-    >
+    <span className={cn(pill, tone[t])}>
       {STATUS_LABEL[status] ?? status}
     </span>
   );
@@ -123,14 +141,13 @@ export function StatusBadge({ status }: { status: string }) {
 export function PriorityDot({ priority }: { priority: string }) {
   const color =
     priority === "high"
-      ? "#C65D00"
+      ? "bg-primary"
       : priority === "medium"
-      ? "#FF9F1C"
-      : "#CFC5BE";
+        ? "bg-accent"
+        : "bg-border";
   return (
     <span
-      className="inline-block h-2 w-2 rounded-full"
-      style={{ backgroundColor: color }}
+      className={cn("inline-block h-2 w-2 shrink-0 rounded-full", color)}
       aria-hidden
     />
   );
@@ -138,7 +155,8 @@ export function PriorityDot({ priority }: { priority: string }) {
 
 export function QualityRing({ score }: { score: number }) {
   const pct = Math.round((score ?? 0) * 100);
-  const color = pct >= 80 ? "#2ea043" : pct >= 60 ? "#C65D00" : "#B23A1E";
+  const stroke =
+    pct >= 80 ? "#2ea043" : pct >= 60 ? "var(--primary)" : "var(--destructive)";
   return (
     <div className="flex items-center gap-1.5">
       <div className="relative h-7 w-7">
@@ -148,7 +166,7 @@ export function QualityRing({ score }: { score: number }) {
             cy="18"
             r="15"
             fill="none"
-            stroke="#CFC5BE"
+            stroke="var(--border)"
             strokeWidth="4"
           />
           <circle
@@ -156,14 +174,14 @@ export function QualityRing({ score }: { score: number }) {
             cy="18"
             r="15"
             fill="none"
-            stroke={color}
+            stroke={stroke}
             strokeWidth="4"
             strokeDasharray={`${(pct / 100) * 94.2} 94.2`}
             strokeLinecap="round"
           />
         </svg>
       </div>
-      <span className="font-heading text-sm font-semibold text-[#4A2F1A]">
+      <span className="font-heading text-sm font-semibold text-foreground">
         {pct}%
       </span>
     </div>

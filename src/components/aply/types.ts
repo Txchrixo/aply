@@ -44,6 +44,13 @@ export interface PlatformListResponse {
   totalPages: number;
 }
 
+export interface CompanySummary {
+  id: string;
+  name: string;
+  website: string | null;
+  careerPages?: Array<{ url: string }>;
+}
+
 export interface JobOffer {
   id: string;
   externalId: string | null;
@@ -68,6 +75,7 @@ export interface JobOffer {
   createdAt: string;
   updatedAt: string;
   platform?: Platform;
+  companyRecord?: CompanySummary | null;
 }
 
 export interface FormField {
@@ -123,6 +131,9 @@ export interface Resume {
   } | null;
   language: string;
   isDefault: boolean;
+  fileName?: string | null;
+  fileMime?: string | null;
+  hasFile?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -148,6 +159,8 @@ export interface PastApplicationListResponse {
 
 export interface Settings {
   id: string;
+  firstName?: string | null;
+  lastName?: string | null;
   notifyEmail: string | null;
   notifyWhatsapp: string | null;
   notifyChannel: string;
@@ -158,6 +171,8 @@ export interface Settings {
   antiAiStrictMode: boolean;
   accountEmails: string[];
   preferCareerPage: boolean;
+  onboardingCompleted?: boolean;
+  onboardingStep?: number;
   createdAt: string;
   updatedAt: string;
 }

@@ -30,7 +30,23 @@ export async function GET(req: NextRequest) {
       skip: (page - 1) * pageSize,
       take: pageSize,
       include: {
-        jobOffer: { include: { platform: true } },
+        jobOffer: {
+          include: {
+            platform: true,
+            companyRecord: {
+              select: {
+                id: true,
+                name: true,
+                website: true,
+                careerPages: {
+                  where: { enabled: true },
+                  select: { url: true },
+                  take: 1,
+                },
+              },
+            },
+          },
+        },
       },
     }),
   ]);

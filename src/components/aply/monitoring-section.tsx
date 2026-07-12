@@ -14,12 +14,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Icon } from "@/components/aply/icon";
 import { SectionHeading } from "@/components/aply/section-heading";
 import { useI18n } from "@/components/aply/i18n";
+import { useDashNav } from "@/components/aply/dashboard-nav";
+import { resolveOfferLogo } from "@/lib/offer-logo";
 import {
   CategoryBadge,
   ContractBadge,
   LangBadge,
   StatusBadge,
 } from "@/components/aply/badges";
+import { PlatformLogo } from "@/components/aply/platform-logo";
 import type {
   Application,
   ApplicationListResponse,
@@ -28,7 +31,7 @@ import type {
   Settings,
   Stats,
 } from "@/components/aply/types";
-import { apiFetch, initials, logoColor, relativeTime } from "@/components/aply/utils";
+import { apiFetch, relativeTime } from "@/components/aply/utils";
 
 interface MonitoringSectionProps {
   stats: Stats | null;
@@ -42,6 +45,12 @@ interface DetectedRow {
   key: string;
   title: string;
   company: string | null;
+  platformName: string | null;
+  platformUrl: string | null;
+  /** Favicon source: company site for career_page, otherwise platform. */
+  logoUrl: string | null;
+  logoLabel: string | null;
+  applicationSource: string | null;
   location: string | null;
   salary: string | null;
   contractType: string | null;
@@ -56,6 +65,28 @@ interface DetectedRow {
   importProgress?: number;
   /** Current pipeline step: detecting_fields | generating_letter | filling_form | ready. */
   importStep?: string;
+}
+
+function mapOfferFields(offer: JobOffer) {
+  const logo = resolveOfferLogo(offer);
+  return {
+    title: offer.title,
+    company: offer.company,
+    platformName: offer.platform?.name ?? null,
+    platformUrl: offer.platform?.url ?? null,
+    logoUrl: logo.logoUrl,
+    logoLabel: logo.logoLabel,
+    applicationSource: offer.applicationSource ?? null,
+    location: offer.location,
+    salary: offer.salary,
+    contractType: offer.contractType,
+    category: offer.platform?.category ?? "niche",
+    detectedAt: offer.detectedAt,
+    url: offer.url,
+    jobOfferId: offer.id,
+    importProgress: offer.importProgress ?? undefined,
+    importStep: offer.importStep ?? undefined,
+  };
 }
 
 interface ScanResult {
@@ -90,6 +121,7 @@ export function MonitoringSection({
   scanTick,
 }: MonitoringSectionProps) {
   const { t } = useI18n();
+  const { setView } = useDashNav();
   const [rows, setRows] = useState<DetectedRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [togglingMonitor, setTogglingMonitor] = useState(false);
@@ -112,20 +144,11 @@ export function MonitoringSection({
         seen.add(k);
         merged.push({
           key: `a-${a.id}`,
-          title: a.jobOffer.title,
-          company: a.jobOffer.company,
-          location: a.jobOffer.location,
-          salary: a.jobOffer.salary,
-          contractType: a.jobOffer.contractType,
+          ...mapOfferFields(a.jobOffer),
           language: a.jobOffer.language ?? a.language,
           status: a.status,
-          category: a.jobOffer.platform?.category ?? "niche",
           detectedAt: a.jobOffer.detectedAt ?? a.createdAt,
-          url: a.jobOffer.url,
           applicationId: a.id,
-          jobOfferId: a.jobOffer.id,
-          importProgress: a.jobOffer.importProgress ?? undefined,
-          importStep: a.jobOffer.importStep ?? undefined,
         });
       }
       for (const j of jobsRes.items as JobOffer[]) {
@@ -133,19 +156,9 @@ export function MonitoringSection({
         seen.add(j.id);
         merged.push({
           key: `j-${j.id}`,
-          title: j.title,
-          company: j.company,
-          location: j.location,
-          salary: j.salary,
-          contractType: j.contractType,
+          ...mapOfferFields(j),
           language: j.language,
           status: j.status,
-          category: j.platform?.category ?? "niche",
-          detectedAt: j.detectedAt,
-          url: j.url,
-          jobOfferId: j.id,
-          importProgress: j.importProgress ?? undefined,
-          importStep: j.importStep ?? undefined,
         });
       }
 
@@ -214,7 +227,12 @@ export function MonitoringSection({
           `Scan complete · ${count} new offer${count > 1 ? "s" : ""} detected`,
           {
             description: res.newOffers
-              .map((o) => `• ${o.title} · ${o.company}`)
+              .map((o) => {
+                const bits = [o.title];
+                if (o.platformName) bits.push(o.platformName);
+                if (o.company) bits.push(o.company);
+                return `• ${bits.join(" · ")}`;
+              })
               .join("\n"),
           }
         );
@@ -243,7 +261,7 @@ export function MonitoringSection({
     <section
       id="monitoring"
       aria-labelledby="monitoring-heading"
-      className="px-4 py-12 md:px-6 md:py-16"
+      className="aply-panel px-0 py-0"
     >
       <div className="mx-auto w-full max-w-7xl">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -277,9 +295,20 @@ export function MonitoringSection({
                   {t("monitoring.recent")}
                 </h3>
               </div>
-              <span className="text-xs text-muted-foreground">
-                {rows.length} {t("monitoring.shown")}
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-muted-foreground">
+                  {rows.length} {t("monitoring.shown")}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs text-primary"
+                  onClick={() => setView("offers")}
+                >
+                  {t("monitoring.viewAll")}
+                  <Icon name="arrow-right" size={12} />
+                </Button>
+              </div>
             </div>
             <ScrollArea className="h-[28rem]">
               <ul className="divide-y divide-border">
@@ -317,21 +346,32 @@ export function MonitoringSection({
                             transition={{ duration: 1.2 }}
                             className="flex flex-col gap-3 px-5 py-4 transition-colors hover:bg-background/60 sm:flex-row sm:items-center dark:hover:bg-secondary/60"
                           >
-                            <span
-                              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-semibold text-primary-foreground"
-                              style={{
-                                backgroundColor: logoColor(row.company ?? row.title),
-                              }}
-                              aria-hidden
-                            >
-                              {initials(row.company ?? row.title)}
-                            </span>
+                            {row.logoUrl ? (
+                              <PlatformLogo
+                                url={row.logoUrl}
+                                name={row.logoLabel ?? undefined}
+                                size={40}
+                                className="rounded-lg border border-border bg-card"
+                              />
+                            ) : (
+                              <span
+                                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground"
+                                aria-hidden
+                              >
+                                <Icon name="globe" size={18} />
+                              </span>
+                            )}
                             <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2">
+                              <div className="flex flex-wrap items-center gap-2">
                                 <p className="truncate font-medium text-foreground dark:text-primary-foreground">
                                   {row.title}
                                 </p>
                                 <CategoryBadge category={row.category} />
+                                {row.applicationSource === "career_page" && (
+                                  <span className="inline-flex items-center rounded border border-primary/25 bg-primary/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-primary">
+                                    {t("monitoring.careerPage")}
+                                  </span>
+                                )}
                                 {isNew && (
                                   <span className="inline-flex items-center gap-0.5 rounded bg-accent px-1.5 py-0.5 text-[9px] font-bold uppercase text-foreground">
                                     <Icon name="zap" size={9} />
@@ -340,7 +380,7 @@ export function MonitoringSection({
                                 )}
                               </div>
                               {importing ? (
-                                <div className="mt-1.5 flex items-center gap-2">
+                                <div className="mt-1.5 flex flex-wrap items-center gap-2">
                                   <Icon
                                     name="sync"
                                     size={11}
@@ -349,7 +389,7 @@ export function MonitoringSection({
                                   <span className="text-[11px] text-muted-foreground dark:text-[#C9B89F]">
                                     Importing · {importStepLabel(row.importStep)}
                                   </span>
-                                  <div className="ml-1 h-1 w-20 overflow-hidden rounded-full bg-[#CFC5BE] dark:bg-[#5A3D26]">
+                                  <div className="h-1 w-20 overflow-hidden rounded-full bg-[#CFC5BE] dark:bg-[#5A3D26]">
                                     <div
                                       className="h-full rounded-full bg-primary transition-all dark:bg-accent"
                                       style={{ width: `${importPct}%` }}
@@ -359,15 +399,34 @@ export function MonitoringSection({
                                     {importPct}%
                                   </span>
                                 </div>
-                              ) : (
-                                <p className="mt-0.5 truncate text-xs text-muted-foreground dark:text-[#C9B89F]">
-                                  {row.company ?? "-"}
-                                  {row.location ? ` · ${row.location}` : ""}
-                                  {row.salary ? ` · ${row.salary}` : ""}
-                                  {" · "}
-                                  {relativeTime(row.detectedAt)}
-                                </p>
-                              )}
+                              ) : null}
+                              <p className="mt-0.5 truncate text-xs text-muted-foreground dark:text-[#C9B89F]">
+                                {row.applicationSource === "career_page" ? (
+                                  <span className="font-medium text-foreground/80 dark:text-primary-foreground/80">
+                                    {row.company?.trim()
+                                      ? row.company
+                                      : t("monitoring.unknownCompany")}
+                                  </span>
+                                ) : (
+                                  <>
+                                    <span className="font-medium text-foreground/80 dark:text-primary-foreground/80">
+                                      {row.platformName ?? t("monitoring.unknownPlatform")}
+                                    </span>
+                                    {" · "}
+                                    {row.company?.trim()
+                                      ? row.company
+                                      : t("monitoring.unknownCompany")}
+                                  </>
+                                )}
+                                {row.applicationSource === "career_page" &&
+                                row.platformName
+                                  ? ` · ${t("approvals.via")} ${row.platformName}`
+                                  : ""}
+                                {row.location ? ` · ${row.location}` : ""}
+                                {row.salary ? ` · ${row.salary}` : ""}
+                                {" · "}
+                                {relativeTime(row.detectedAt)}
+                              </p>
                             </div>
                             <div className="flex flex-wrap items-center gap-1.5">
                               {row.language && <LangBadge lang={row.language} />}

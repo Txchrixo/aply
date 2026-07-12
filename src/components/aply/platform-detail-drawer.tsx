@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Icon } from "@/components/aply/icon";
+import { PlatformLogo } from "@/components/aply/platform-logo";
 import { useI18n } from "@/components/aply/i18n";
 import { hasRssFeed } from "@/lib/rss-feeds";
 import {
@@ -112,7 +113,10 @@ export function PlatformDetailDrawer({
         aria-describedby={undefined}
       >
         <SheetHeader className="border-b border-border px-6 py-4 dark:border-[#5A3D26]">
-          <SheetTitle className="font-heading text-xl font-semibold text-foreground dark:text-primary-foreground">
+          <SheetTitle className="flex items-center gap-2.5 font-heading text-xl font-semibold text-foreground dark:text-primary-foreground">
+            {p?.url ? (
+              <PlatformLogo url={p.url} name={p.name} size={28} />
+            ) : null}
             {loading ? "Loading…" : p ? p.name : "Platform not found"}
           </SheetTitle>
           <SheetDescription className="text-sm text-muted-foreground dark:text-[#C9B89F]">

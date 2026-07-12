@@ -1,10 +1,7 @@
 "use client";
 /**
- * Pagination - reusable, responsive pagination component.
- * Shows: Prev | page numbers (with ellipsis) | Next
- * Mobile: compact (Prev/Next + current page indicator)
+ * Pagination — compact segmented control (dashboard style).
  */
-import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/aply/icon";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +10,30 @@ interface PaginationProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   className?: string;
+  /** Optional summary shown opposite the controls when align is between */
+  summary?: string;
+  /** start = left, end = right, between = summary left + controls right */
+  align?: "start" | "end" | "between";
+}
+
+function buildPages(page: number, totalPages: number): (number | "…")[] {
+  const pages: (number | "…")[] = [];
+  if (totalPages <= 7) {
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+    return pages;
+  }
+  pages.push(1);
+  if (page > 3) pages.push("…");
+  for (
+    let i = Math.max(2, page - 1);
+    i <= Math.min(totalPages - 1, page + 1);
+    i++
+  ) {
+    pages.push(i);
+  }
+  if (page < totalPages - 2) pages.push("…");
+  pages.push(totalPages);
+  return pages;
 }
 
 export function Pagination({
@@ -20,109 +41,114 @@ export function Pagination({
   totalPages,
   onPageChange,
   className,
+  summary,
+  align = "between",
 }: PaginationProps) {
-  if (totalPages <= 1) return null;
-
-  // Build page numbers with ellipsis
-  const pages: (number | "...")[] = [];
-  const add = (n: number | "...") => pages.push(n);
-
-  if (totalPages <= 7) {
-    for (let i = 1; i <= totalPages; i++) add(i);
-  } else {
-    add(1);
-    if (page > 3) add("...");
-    for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) {
-      add(i);
-    }
-    if (page < totalPages - 2) add("...");
-    add(totalPages);
+  if (totalPages <= 1) {
+    if (!summary) return null;
+    return (
+      <p
+        className={cn(
+          "text-xs text-muted-foreground",
+          align === "end" && "text-right",
+          className
+        )}
+      >
+        {summary}
+      </p>
+    );
   }
+
+  const pages = buildPages(page, totalPages);
 
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-3",
+        "flex flex-wrap items-center gap-3",
+        align === "start" && "justify-start",
+        align === "end" && "justify-end",
+        align === "between" && "justify-between",
         className
       )}
     >
-      {/* Mobile: compact */}
-      <div className="flex items-center gap-2 sm:hidden">
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={page <= 1}
-          onClick={() => onPageChange(page - 1)}
-          className="touch-target border-border px-3"
-          aria-label="Previous page"
-        >
-          <Icon name="arrow-left" size={14} />
-        </Button>
-        <span className="flex-1 text-center text-sm text-muted-foreground">
+      {summary && align === "between" ? (
+        <p className="text-xs text-muted-foreground">{summary}</p>
+      ) : null}
+
+      {!summary && align !== "between" ? (
+        <span className="text-xs tabular-nums text-muted-foreground sm:hidden">
           {page} / {totalPages}
         </span>
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={page >= totalPages}
-          onClick={() => onPageChange(page + 1)}
-          className="touch-target border-border px-3"
-          aria-label="Next page"
-        >
-          <Icon name="arrow-right" size={14} />
-        </Button>
-      </div>
+      ) : null}
 
-      {/* Desktop: full */}
-      <div className="hidden items-center gap-1 sm:flex">
-        <Button
-          variant="outline"
-          size="sm"
+      <nav
+        aria-label="Pagination"
+        className="inline-flex items-center overflow-hidden rounded-lg border border-border bg-card"
+      >
+        <button
+          type="button"
           disabled={page <= 1}
           onClick={() => onPageChange(page - 1)}
-          className="gap-1.5 border-border"
+          aria-label="Previous page"
+          className={cn(
+            "flex h-8 items-center gap-1 border-r border-border px-2.5 text-xs font-medium text-muted-foreground transition-colors",
+            "hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+          )}
         >
-          <Icon name="arrow-left" size={14} />
-          Prev
-        </Button>
-        <div className="flex items-center gap-1">
+          <Icon name="chevron-left" size={14} />
+          <span className="hidden sm:inline">Prev</span>
+        </button>
+
+        <div className="hidden items-stretch sm:flex">
           {pages.map((p, i) =>
-            p === "..." ? (
+            p === "…" ? (
               <span
-                key={`ellipsis-${i}`}
-                className="px-2 text-sm text-muted-foreground"
+                key={`e-${i}`}
+                className="flex h-8 w-8 items-center justify-center border-r border-border text-xs text-muted-foreground last:border-r-0"
+                aria-hidden
               >
-                ...
+                …
               </span>
             ) : (
               <button
                 key={p}
+                type="button"
                 onClick={() => onPageChange(p)}
+                aria-label={`Page ${p}`}
+                aria-current={p === page ? "page" : undefined}
                 className={cn(
-                  "flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-medium transition-colors",
+                  "flex h-8 min-w-8 items-center justify-center border-r border-border px-2 text-xs font-medium tabular-nums transition-colors last:border-r-0",
                   p === page
                     ? "bg-primary text-primary-foreground"
                     : "text-foreground hover:bg-muted"
                 )}
-                aria-label={`Page ${p}`}
-                aria-current={p === page ? "page" : undefined}
               >
                 {p}
               </button>
             )
           )}
         </div>
-        <Button
-          variant="outline"
-          size="sm"
+
+        <span className="flex h-8 items-center border-r border-border px-3 text-xs tabular-nums text-foreground sm:hidden">
+          {page}
+          <span className="mx-1 text-muted-foreground">/</span>
+          {totalPages}
+        </span>
+
+        <button
+          type="button"
           disabled={page >= totalPages}
           onClick={() => onPageChange(page + 1)}
-          className="gap-1.5 border-border"
+          aria-label="Next page"
+          className={cn(
+            "flex h-8 items-center gap-1 px-2.5 text-xs font-medium text-muted-foreground transition-colors",
+            "hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+          )}
         >
-          Next
-          <Icon name="arrow-right" size={14} />
-        </Button>
-      </div>
+          <span className="hidden sm:inline">Next</span>
+          <Icon name="chevron-right" size={14} />
+        </button>
+      </nav>
     </div>
   );
 }
